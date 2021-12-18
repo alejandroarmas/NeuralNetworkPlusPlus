@@ -16,7 +16,6 @@ namespace Matrix {
 
         public:
             Representation(u_int64_t _l, u_int64_t _w) : rows(_l), columns(_w), data(std::move(std::vector<T>(_l * _w, 0))) {}
-            void print_contents();
             u_int64_t num_rows() { return rows; }
             u_int64_t num_cols() { return columns; }
             T get(u_int64_t r, u_int64_t c);
