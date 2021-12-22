@@ -23,14 +23,21 @@ int main(void) {
 
     Matrix::Printer<double> m_printer;
     
-    MatrixMultiplication::Naive<double> mm;
+    Matrix::Operations::Multiplication::Naive<double> mm;
+    Matrix::Operations::HadamardProduct::Naive<double> hp;
+
+
 
     m_printer(*ma);
     m_printer(*mb);
 
     std::unique_ptr<matrix_t> out = mm(*ma, *mb);
+    std::unique_ptr<matrix_t> h_out = hp(*ma, *ma);
+
 
     m_printer(*out);
+
+    m_printer(*h_out);
 
     return 0;
 }
