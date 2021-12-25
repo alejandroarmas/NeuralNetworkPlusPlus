@@ -1,0 +1,7 @@
+deps/*/
+*.o
+*.d
+.vscode/
+*/obj/
+run_unit_tests
+matrix_multiply
