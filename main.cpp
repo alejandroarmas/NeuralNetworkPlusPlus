@@ -1,5 +1,3 @@
-#include <iostream>
-#include <vector>
 #include <memory>
 
 #include "mm.h"
@@ -16,25 +14,22 @@ int main(void) {
     std::unique_ptr<matrix_t> ma = std::make_unique<matrix_t>(20, 1);
 
 
-    Matrix::Generator<double> matrix_init;
+    Matrix::Generation::Normal<double> normal_distribution_init(0, 1);
+    Matrix::Generation::Tester<double> vec_init;
 
-    ma = matrix_init(std::move(ma));
 
-    // mb = matrix_init(std::move(mb));
+
+    ma = vec_init(std::move(ma));
+
 
     Matrix::Printer<double> m_printer;
 
     m_printer(*ma);
 
-    NeuralNetwork::Layer<double> l(10, 20);
+    NeuralNetwork::Layer<double> l(10, 20, normal_distribution_init);
 
     l.predict(std::move(ma));
 
- 
-    
 
- 
-
- 
     return 0;
 }
