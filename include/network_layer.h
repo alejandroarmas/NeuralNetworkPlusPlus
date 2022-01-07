@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <memory>
-
+#include <functional>
 
 #include "functions.h"
 #include "generator.h"
@@ -27,14 +27,13 @@ namespace NeuralNetwork {
     class Layer: public BaseLayer<T> {
 
         public:
-            Layer(u_int64_t _l, u_int64_t _w) : 
+            Layer(u_int64_t _l, u_int64_t _w, Matrix::Generation::Base<T>& matrix_init) : 
                 weights(std::move(std::make_unique<Matrix::Representation<T>>(_l, _w))), 
                 bias(std::move(std::make_unique<Matrix::Representation<T>>(_l, FLAT))),
                 z(nullptr) {
                     
-                    Matrix::Generator<T> matrix_init;
                     this->weights = matrix_init(std::move(this->weights));
-                    this->bias = matrix_init(std::move(this->bias));
+                    this->bias    = matrix_init(std::move(this->bias));
             }            
             std::unique_ptr<Matrix::Representation<T>> predict(std::unique_ptr<Matrix::Representation<T>> input);
         private:
