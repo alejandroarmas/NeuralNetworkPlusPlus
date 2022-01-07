@@ -1,21 +1,19 @@
 
 #include <memory>
 #include <random>
+#include <functional>
 
+#include "config.h"
 #include "generator.h"
 
 
-#define MEAN 1
-#define VARIANCE 2
-#define DAMPEN 0.01
-
 template <class T>
-std::unique_ptr<Matrix::Representation<T>> Matrix::Generator<T>::operator() (std::unique_ptr<Matrix::Representation<T>> m) {
+std::unique_ptr<Matrix::Representation<T>> Matrix::Generation::Normal<T>::operator() (std::unique_ptr<Matrix::Representation<T>> m) {
 
     std::random_device rd{};
     std::mt19937 gen{rd()};
 
-    std::normal_distribution<> d{MEAN, VARIANCE};
+    std::normal_distribution<> d{this->mean, this->variance};
 
     for (uint64_t c = 0; c < m->num_cols(); c++) {
 
@@ -24,6 +22,17 @@ std::unique_ptr<Matrix::Representation<T>> Matrix::Generator<T>::operator() (std
         }
 
     }
+
+    return std::move(m);
+}
+
+
+template <class T>
+std::unique_ptr<Matrix::Representation<T>> Matrix::Generation::Tester<T>::operator() (std::unique_ptr<Matrix::Representation<T>> m) {
+
+    
+    std::transform(m->scanStart(), m->scanEnd(), m->scanStart(), [](auto a){ return GENERATOR_TESTER_CONSTANT; });
+
 
     return std::move(m);
 }
