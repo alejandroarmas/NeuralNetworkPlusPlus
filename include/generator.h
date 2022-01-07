@@ -10,56 +10,33 @@ namespace Matrix {
 
     namespace Generation {
 
-        template <class T>
         class Base {
 
             public:
-                virtual std::unique_ptr<Matrix::Representation<T>> operator() (std::unique_ptr<Matrix::Representation<T>> m) = 0;
+                virtual std::unique_ptr<Matrix::Representation> operator() (std::unique_ptr<Matrix::Representation> m) = 0;
         };
 
 
-        template <class T>
-        class Normal : public Base<T> {
+        class Normal : public Base {
 
             public:
                 Normal(double _m, double _v) : mean(_m), variance(_v) {}
-                std::unique_ptr<Matrix::Representation<T>> operator() (std::unique_ptr<Matrix::Representation<T>> m) override;
+                std::unique_ptr<Matrix::Representation> operator() (std::unique_ptr<Matrix::Representation> m) override;
             private:
                 double  mean; 
                 double variance;
         };
 
-        template class Normal<float>;
-        template class Normal<double>;
-        template class Normal<int8_t>;
-        template class Normal<int16_t>;
-        template class Normal<int32_t>;
-        template class Normal<int64_t>;
-        template class Normal<uint8_t>;
-        template class Normal<uint16_t>;
-        template class Normal<uint32_t>;
-        template class Normal<uint64_t>;
 
 
-        template <class T>
-        class Tester : public Base<T> {
+        class Tester : public Base {
 
             public:
-                std::unique_ptr<Matrix::Representation<T>> operator() (std::unique_ptr<Matrix::Representation<T>> m) override;
+                std::unique_ptr<Matrix::Representation> operator() (std::unique_ptr<Matrix::Representation> m) override;
             private:
         };
 
-        template class Tester<float>;
-        template class Tester<double>;
-        template class Tester<int8_t>;
-        template class Tester<int16_t>;
-        template class Tester<int32_t>;
-        template class Tester<int64_t>;
-        template class Tester<uint8_t>;
-        template class Tester<uint16_t>;
-        template class Tester<uint32_t>;
-        template class Tester<uint64_t>;
-
+      
     }
 
 }

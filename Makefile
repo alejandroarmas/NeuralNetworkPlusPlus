@@ -1,11 +1,12 @@
 all: matrix_multiply run_unit_tests
 
-CC = g++
+CC = clang
 # CFLAGS = -g -Werror -Wall -I include -I shared/include -I/usr/local/opt/openssl@1.1/include
 CFLAGS = -g -Werror -Wall -I include -std=c++1z
 
-# LDFLAGS = -L/usr/local/opt/openssl@1.1/lib -lssl -lcrypto -pthread
-LDFLAGS = -L/include 
+# LDFLAGS = -L/usr/local/opt/openssl@1.1/lib -lssl -lcrypto -pthread -fopencilk -ldl 
+LDFLAGS = -L/include -lstdc++ -lm
+ 
 
 VPATH = shared
 

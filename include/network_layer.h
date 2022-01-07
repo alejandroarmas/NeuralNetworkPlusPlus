@@ -12,39 +12,36 @@
 
 #define FLAT 1
 
+
 namespace NeuralNetwork {
 
-    template <class T>
+
     class BaseLayer {
 
         public:
             virtual ~BaseLayer() = default;
-            virtual std::unique_ptr<Matrix::Representation<T>> predict(std::unique_ptr<Matrix::Representation<T>> input) = 0;            
+            virtual std::unique_ptr<Matrix::Representation> predict(std::unique_ptr<Matrix::Representation> input) = 0;            
     };
 
 
-    template <class T>
-    class Layer: public BaseLayer<T> {
+    class Layer: public BaseLayer {
 
         public:
-            Layer(u_int64_t _l, u_int64_t _w, Matrix::Generation::Base<T>& matrix_init) : 
-                weights(std::move(std::make_unique<Matrix::Representation<T>>(_l, _w))), 
-                bias(std::move(std::make_unique<Matrix::Representation<T>>(_l, FLAT))),
+            Layer(u_int64_t _l, u_int64_t _w, Matrix::Generation::Base& matrix_init) : 
+                weights(std::make_unique<Matrix::Representation>(_l, _w)), 
+                bias(std::make_unique<Matrix::Representation>(_l, FLAT)),
                 z(nullptr) {
                     
                     this->weights = matrix_init(std::move(this->weights));
                     this->bias    = matrix_init(std::move(this->bias));
             }            
-            std::unique_ptr<Matrix::Representation<T>> predict(std::unique_ptr<Matrix::Representation<T>> input);
+            std::unique_ptr<Matrix::Representation> predict(std::unique_ptr<Matrix::Representation> input);
         private:
-            std::unique_ptr<Matrix::Representation<T>> weights;
-            std::unique_ptr<Matrix::Representation<T>> bias;
-            std::unique_ptr<Matrix::Representation<T>> z;
+            std::unique_ptr<Matrix::Representation> weights;
+            std::unique_ptr<Matrix::Representation> bias;
+            std::unique_ptr<Matrix::Representation> z;
             // std::unique_ptr<ActivationFunctions::BaseFunction> activation;
     };
-
-    template class Layer<float>;
-    template class Layer<double>;
 
 
 

@@ -9,8 +9,7 @@
 #define MAX_PRINT_LENGTH 5
 
 
-template <class T>
-void Matrix::Printer<T>::operator()(Matrix::Representation<T> m) {
+void Matrix::Printer::operator()(Matrix::Representation m) {
 
     bool valid_column_print = true;
     bool reached_end_row = true;

@@ -3,13 +3,8 @@
 
 #include "mm.h"
 
-#define MAX_PRINT_WIDTH 5
-#define MAX_PRINT_LENGTH 5
 
-
-
-template <class T>
-T Matrix::Representation<T>::get(u_int64_t r, u_int64_t c) {
+float Matrix::Representation::get(u_int64_t r, u_int64_t c) {
 
                 uint64_t calculated_index = c + r * columns; 
 
@@ -21,8 +16,7 @@ T Matrix::Representation<T>::get(u_int64_t r, u_int64_t c) {
             }
 
 
-template <class T>
-void Matrix::Representation<T>::put(u_int64_t r, u_int64_t c, T val) {
+void Matrix::Representation::put(u_int64_t r, u_int64_t c, float val) {
 
                 uint64_t calculated_index = c + r * columns; 
 

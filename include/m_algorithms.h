@@ -12,95 +12,60 @@ namespace Matrix {
 
     namespace Operations {
 
-        template <class T>
         class BaseOp {
 
             public:
-                virtual std::unique_ptr<Matrix::Representation<T>> operator()(
-                    Matrix::Representation<T> l, 
-                    Matrix::Representation<T> r) = 0;
+                virtual std::unique_ptr<Matrix::Representation> operator()(
+                    Matrix::Representation l, 
+                    Matrix::Representation r) = 0;
 
         };
 
         namespace Add {
 
-            template <class T> 
-            class BaseAdd : BaseOp<T> {
+
+            class BaseAdd : BaseOp {
 
             };
 
-            template <class T> 
-            class Std : public BaseAdd<T> {
+
+            class Std : public BaseAdd {
                 public:
-                    std::unique_ptr<Matrix::Representation<T>> operator()(
-                        Matrix::Representation<T> l, 
-                        Matrix::Representation<T> r) override;
+                    std::unique_ptr<Matrix::Representation> operator()(
+                        Matrix::Representation l, 
+                        Matrix::Representation r) override;
 
             };
 
-            template class Std<float>;
-            template class Std<double>;
-            template class Std<int8_t>;
-            template class Std<int16_t>;
-            template class Std<int32_t>;
-            template class Std<int64_t>;
-            template class Std<uint8_t>;
-            template class Std<uint16_t>;
-            template class Std<uint32_t>;
-            template class Std<uint64_t>;
         }
 
 
         namespace HadamardProduct {
 
-            template <class T> 
-            class BaseHP : BaseOp<T> {
+            class BaseHP : BaseOp {
 
             };
 
-            template <class T> 
-            class Naive : public BaseHP<T> {
+            class Naive : public BaseHP {
 
                 public:
-                    std::unique_ptr<Matrix::Representation<T>> operator()(
-                        Matrix::Representation<T> l, 
-                        Matrix::Representation<T> r) override;
+                    std::unique_ptr<Matrix::Representation> operator()(
+                        Matrix::Representation l, 
+                        Matrix::Representation r) override;
 
             };
 
-            template <class T> 
-            class Std : public BaseHP<T> {
+
+            class Std : public BaseHP {
 
                 public:
-                    std::unique_ptr<Matrix::Representation<T>> operator()(
-                        Matrix::Representation<T> l, 
-                        Matrix::Representation<T> r) override;
+                    std::unique_ptr<Matrix::Representation> operator()(
+                        Matrix::Representation l, 
+                        Matrix::Representation r) override;
 
             };
 
 
-
-            template class Naive<float>;
-            template class Naive<double>;
-            template class Naive<int8_t>;
-            template class Naive<int16_t>;
-            template class Naive<int32_t>;
-            template class Naive<int64_t>;
-            template class Naive<uint8_t>;
-            template class Naive<uint16_t>;
-            template class Naive<uint32_t>;
-            template class Naive<uint64_t>;
-
-            template class Std<float>;
-            template class Std<double>;
-            template class Std<int8_t>;
-            template class Std<int16_t>;
-            template class Std<int32_t>;
-            template class Std<int64_t>;
-            template class Std<uint8_t>;
-            template class Std<uint16_t>;
-            template class Std<uint32_t>;
-            template class Std<uint64_t>;
         }
 
 
@@ -108,33 +73,21 @@ namespace Matrix {
 
         namespace Multiplication {
 
-            template <class T> 
-            class BaseHP : BaseOp<T> {
+            class BaseHP : BaseOp {
 
             };
 
-            template <class T> 
-            class Naive : public BaseHP<T> {
+            class Naive : public BaseHP {
 
                 public:
-                    std::unique_ptr<Matrix::Representation<T>> operator()(
-                        Matrix::Representation<T> l, 
-                        Matrix::Representation<T> r) override;
+                    std::unique_ptr<Matrix::Representation> operator()(
+                        Matrix::Representation l, 
+                        Matrix::Representation r) override;
 
             };
 
 
 
-            template class Naive<float>;
-            template class Naive<double>;
-            template class Naive<int8_t>;
-            template class Naive<int16_t>;
-            template class Naive<int32_t>;
-            template class Naive<int64_t>;
-            template class Naive<uint8_t>;
-            template class Naive<uint16_t>;
-            template class Naive<uint32_t>;
-            template class Naive<uint64_t>;
         }
 
     }

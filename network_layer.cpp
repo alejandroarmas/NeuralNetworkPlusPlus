@@ -8,11 +8,10 @@
 #include "config.h"
 
 
-template <class T>
-std::unique_ptr<Matrix::Representation<T>> NeuralNetwork::Layer<T>::predict(std::unique_ptr<Matrix::Representation<T>> input) {
+std::unique_ptr<Matrix::Representation> NeuralNetwork::Layer::predict(std::unique_ptr<Matrix::Representation> input) {
 
-    Matrix::Operations::Multiplication::Naive<T> mm;
-    Matrix::Operations::Add::Std<T> add;
+    Matrix::Operations::Multiplication::Naive mm;
+    Matrix::Operations::Add::Std add;
 
 
     auto out = mm(*this->weights, *input);
@@ -22,7 +21,7 @@ std::unique_ptr<Matrix::Representation<T>> NeuralNetwork::Layer<T>::predict(std:
 
 
 #if DEBUG
-    Matrix::Printer<T> m_printer;
+    Matrix::Printer m_printer;
     m_printer(*z);
 #endif
 
