@@ -60,19 +60,6 @@ std::unique_ptr<Matrix::Representation> Matrix::Operations::HadamardProduct::Nai
 
 
 
-/*
-Usage:
-
-    using matrix_t = Matrix::Representation; 
-
-    std::unique_ptr<matrix_t> ma = std::make_unique<matrix_t>(2000, 100);
-    std::unique_ptr<matrix_t> mb = std::make_unique<matrix_t>(100, 3000);
-
-
-    Matrix::Operations::Multiplication::Naive mul;
-
-    std::unique_ptr<matrix_t> mc = mul(*ma, *mb);
-*/
 std::unique_ptr<Matrix::Representation> Matrix::Operations::Multiplication::Naive::operator()(
         Matrix::Representation l, 
         Matrix::Representation r) {

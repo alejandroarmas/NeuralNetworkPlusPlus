@@ -71,6 +71,16 @@ namespace Matrix {
 
 
 
+        /*
+        Usage:
+
+            std::unique_ptr<Matrix::Representation> ma = std::make_unique<Matrix::Representation>(2000, 100);
+            std::unique_ptr<Matrix::Representation> mb = std::make_unique<Matrix::Representation>(100, 3000);
+
+            Matrix::Operations::Multiplication::Naive mul;
+
+            std::unique_ptr<Matrix::Representation> mc = mul(*ma, *mb);
+        */
         namespace Multiplication {
 
             class BaseMul : BaseOp {
