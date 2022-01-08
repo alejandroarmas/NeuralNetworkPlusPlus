@@ -17,14 +17,11 @@ namespace Matrix {
         };
 
 
+        template <int M = 0, int V = 1> 
         class Normal : public Base {
 
             public:
-                Normal(double _m, double _v) : mean(_m), variance(_v) {}
                 std::unique_ptr<Matrix::Representation> operator() (std::unique_ptr<Matrix::Representation> m) override;
-            private:
-                double  mean; 
-                double variance;
         };
 
 
@@ -33,12 +30,13 @@ namespace Matrix {
 
             public:
                 std::unique_ptr<Matrix::Representation> operator() (std::unique_ptr<Matrix::Representation> m) override;
-            private:
         };
 
       
     }
 
 }
+
+#include "t_generator.cpp"
 
 #endif

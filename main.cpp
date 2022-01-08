@@ -14,9 +14,8 @@ int main(void) {
     std::unique_ptr<matrix_t> ma = std::make_unique<matrix_t>(20, 1);
 
 
-    Matrix::Generation::Normal normal_distribution_init(0, 1);
+    Matrix::Generation::Normal<0, 1> normal_distribution_init;
     Matrix::Generation::Tester vec_init;
-
 
 
     ma = vec_init(std::move(ma));
