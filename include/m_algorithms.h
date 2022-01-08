@@ -73,11 +73,11 @@ namespace Matrix {
 
         namespace Multiplication {
 
-            class BaseHP : BaseOp {
+            class BaseMul : BaseOp {
 
             };
 
-            class Naive : public BaseHP {
+            class Naive : public BaseMul {
 
                 public:
                     std::unique_ptr<Matrix::Representation> operator()(
@@ -85,6 +85,15 @@ namespace Matrix {
                         Matrix::Representation r) override;
 
             };
+
+            class Square : public BaseMul {
+
+                            public:
+                                std::unique_ptr<Matrix::Representation> operator()(
+                                    Matrix::Representation l, 
+                                    Matrix::Representation r) override;
+
+                        };
 
 
 
