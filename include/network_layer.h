@@ -40,7 +40,7 @@ namespace NeuralNetwork {
             std::unique_ptr<Matrix::Representation> weights;
             std::unique_ptr<Matrix::Representation> bias;
             std::unique_ptr<Matrix::Representation> z;
-            // std::unique_ptr<ActivationFunctions::BaseFunction> activation;
+            // std::unique_ptr<Functions::Activation::BaseFunction> activation;
     };
 
 
