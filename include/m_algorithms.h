@@ -72,7 +72,7 @@ namespace Matrix {
 
 
         /*
-        Usage:
+        Matrix Multiplication Usage:
 
             std::unique_ptr<Matrix::Representation> ma = std::make_unique<Matrix::Representation>(2000, 100);
             std::unique_ptr<Matrix::Representation> mb = std::make_unique<Matrix::Representation>(100, 3000);
