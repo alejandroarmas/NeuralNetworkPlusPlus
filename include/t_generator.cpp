@@ -10,22 +10,27 @@
 #include "generator.h"
 
 
-template <int M, int V> 
-std::unique_ptr<Matrix::Representation> Matrix::Generation::Normal<M, V>::operator() (std::unique_ptr<Matrix::Representation> m){
+template <int Mean, int Variance> 
+std::unique_ptr<Matrix::Representation> Matrix::Generation::Normal<Mean, Variance>::operator() (std::unique_ptr<Matrix::Representation> m){
 
     std::random_device rd{};
     std::mt19937 gen{rd()};
 
-    std::normal_distribution<> d{M, V};
+    std::normal_distribution<> d{Mean, Variance};
 
-    for (uint64_t c = 0; c < m->num_cols(); c++) {
-
-        for (uint64_t r = 0; r < m->num_rows(); r++) {
-            m->put(r, c, DAMPEN * d(gen));
-        }
-    }
+    std::transform(m->scanStart(), m->scanEnd(), m->scanStart(), [&gen, &d](const auto _){ return DAMPEN * d(gen); });
 
     return m;
 }
+
+
+template <int Val> 
+std::unique_ptr<Matrix::Representation> Matrix::Generation::Tester<Val>::operator() (std::unique_ptr<Matrix::Representation> m) {
+ 
+    std::transform(m->scanStart(), m->scanEnd(), m->scanStart(), [](auto _){ return Val; });
+
+    return m;
+}
+
 
 #endif // TEMPLATED_GENERATOR_IMPLEMENTATION
