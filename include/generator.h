@@ -17,7 +17,7 @@ namespace Matrix {
         };
 
 
-        template <int M = 0, int V = 1> 
+        template <int Mean = 0, int Variance = 1> 
         class Normal : public Base {
 
             public:
@@ -25,7 +25,7 @@ namespace Matrix {
         };
 
 
-
+        template <int Val = 1>
         class Tester : public Base {
 
             public:

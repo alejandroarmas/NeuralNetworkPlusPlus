@@ -8,11 +8,11 @@
 #include "generator.h"
 
 
-std::unique_ptr<Matrix::Representation> Matrix::Generation::Tester::operator() (std::unique_ptr<Matrix::Representation> m) {
+// std::unique_ptr<Matrix::Representation> Matrix::Generation::Tester::operator() (std::unique_ptr<Matrix::Representation> m) {
 
     
-    std::transform(m->scanStart(), m->scanEnd(), m->scanStart(), [](auto a){ return GENERATOR_TESTER_CONSTANT; });
+//     std::transform(m->scanStart(), m->scanEnd(), m->scanStart(), [](auto a){ return GENERATOR_TESTER_CONSTANT; });
 
 
-    return m;
-}
+//     return m;
+// }
