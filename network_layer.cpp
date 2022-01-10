@@ -11,7 +11,7 @@
 std::unique_ptr<Matrix::Representation> NeuralNetwork::Layer::predict(std::unique_ptr<Matrix::Representation> input) {
 
     Matrix::Operations::Multiplication::Naive mm;
-    Matrix::Operations::Add::Std add;
+    Matrix::Operations::Addition::Std add;
 
 
     auto out = mm(*this->weights, *input);

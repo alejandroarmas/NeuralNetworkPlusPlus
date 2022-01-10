@@ -21,7 +21,7 @@ namespace Matrix {
 
         };
 
-        namespace Add {
+        namespace Addition {
 
 
             class BaseAdd : BaseOp {
