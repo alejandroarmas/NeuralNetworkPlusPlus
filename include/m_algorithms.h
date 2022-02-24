@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <functional>
 
-#include "mm.h"
+#include "matrix.h"
 
 
 namespace Matrix {

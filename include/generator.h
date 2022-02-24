@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "mm.h"
+#include "matrix.h"
 
 
 namespace Matrix {

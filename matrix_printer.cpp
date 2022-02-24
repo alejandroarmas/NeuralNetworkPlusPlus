@@ -2,7 +2,7 @@
 #include <iomanip>
 
 
-#include "mm.h"
+#include "matrix.h"
 #include "matrix_printer.h"
 
 #define MAX_PRINT_WIDTH 5

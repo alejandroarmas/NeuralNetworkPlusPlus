@@ -7,7 +7,7 @@
 
 #include "functions.h"
 #include "generator.h"
-#include "mm.h"
+#include "matrix.h"
 
 
 #define FLAT 1

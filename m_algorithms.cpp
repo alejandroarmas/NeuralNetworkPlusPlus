@@ -107,7 +107,31 @@ namespace Matrix {
                 return output;
             }
 
-
+            /*
+            Assume that n is an exact power of 2.
+            
+            
+            void Rec_Mult(double *C, double *A, double *B,
+                        int64_t n, int64_t rowsize) {
+            if (n == 1)
+                C[0] += A[0] * B[0];
+            else {
+                int64_t d11 = 0;
+                int64_t d12 = n/2;
+                int64_t d21 = (n/2) * rowsize;
+                int64_t d22 = (n/2) * (rowsize+1);
+                cilk_spawn Rec_Mult(C+d11, A+d11, B+d11, n/2, rowsize);
+                cilk_spawn Rec_Mult(C+d21, A+d22, B+d21, n/2, rowsize);
+                cilk_spawn Rec_Mult(C+d12, A+d11, B+d12, n/2, rowsize);
+                Rec_Mult(C+d22, A+d22, B+d22, n/2, rowsize);
+                cilk_sync;
+                cilk_spawn Rec_Mult(C+d11, A+d12, B+d21, n/2, rowsize);
+                cilk_spawn Rec_Mult(C+d21, A+d21, B+d11, n/2, rowsize);
+                cilk_spawn Rec_Mult(C+d12, A+d12, B+d22, n/2, rowsize);
+                Rec_Mult(C+d22, A+d21, B+d12, n/2, rowsize);
+                cilk_sync;
+            } }
+            */
             std::unique_ptr<Matrix::Representation> Square::operator()(
                     Matrix::Representation l, 
                     Matrix::Representation r) {

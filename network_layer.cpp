@@ -1,7 +1,7 @@
 
 #include <memory>
 
-#include "mm.h"
+#include "matrix.h"
 #include "network_layer.h" 
 #include "m_algorithms.h"
 #include "matrix_printer.h"

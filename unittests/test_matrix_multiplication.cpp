@@ -1,6 +1,6 @@
 #include "../deps/catch.hpp"
 
-#include "../include/mm.h"
+#include "../include/matrix.h"
 #include "../include/generator.h"
 #include "../include/m_algorithms.h"
 

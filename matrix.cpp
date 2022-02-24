@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
 
-#include "mm.h"
+#include "matrix.h"
 #include "functions.h"
 
 
