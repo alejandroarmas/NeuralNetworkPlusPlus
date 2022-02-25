@@ -14,9 +14,9 @@ std::unique_ptr<Matrix::Representation> NeuralNetwork::Layer::predict(std::uniqu
     Matrix::Operations::Addition::Std add;
 
 
-    auto out = mm(*this->weights, *input);
+    auto out = mm(this->weights, input);
 
-    z = add(*out, *this->bias);
+    z = add(out, this->bias);
 
 
 

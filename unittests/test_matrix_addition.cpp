@@ -22,7 +22,7 @@ TEST_CASE("Matrix Addition", "[arithmetic]")
 
     Matrix::Operations::Addition::Std naive_add;
 
-    std::unique_ptr<Matrix::Representation> sum = naive_add(*matrix_with_ones, *matrix_with_ones);
+    std::unique_ptr<Matrix::Representation> sum = naive_add(matrix_with_ones, matrix_with_ones);
 
 
     SECTION("Cilk-for Multiplication")

@@ -16,24 +16,21 @@ namespace Matrix {
 
             public:
                 virtual std::unique_ptr<Matrix::Representation> operator()(
-                    Matrix::Representation l, 
-                    Matrix::Representation r) = 0;
+                    std::unique_ptr<Matrix::Representation>& l, 
+                    std::unique_ptr<Matrix::Representation>& r) = 0;
+                virtual ~BaseOp() = default;
 
         };
+
 
         namespace Addition {
 
 
-            class BaseAdd : BaseOp {
-
-            };
-
-
-            class Std : public BaseAdd {
+            class Std : public BaseOp {
                 public:
                     std::unique_ptr<Matrix::Representation> operator()(
-                        Matrix::Representation l, 
-                        Matrix::Representation r) override;
+                        std::unique_ptr<Matrix::Representation>& l, 
+                        std::unique_ptr<Matrix::Representation>& r) override;
 
             };
 
@@ -42,26 +39,23 @@ namespace Matrix {
 
         namespace HadamardProduct {
 
-            class BaseHP : BaseOp {
-
-            };
-
-            class Naive : public BaseHP {
+            
+            class Naive : public BaseOp {
 
                 public:
                     std::unique_ptr<Matrix::Representation> operator()(
-                        Matrix::Representation l, 
-                        Matrix::Representation r) override;
+                        std::unique_ptr<Matrix::Representation>& l, 
+                        std::unique_ptr<Matrix::Representation>& r) override;
 
             };
 
 
-            class Std : public BaseHP {
+            class Std : public BaseOp {
 
                 public:
                     std::unique_ptr<Matrix::Representation> operator()(
-                        Matrix::Representation l, 
-                        Matrix::Representation r) override;
+                        std::unique_ptr<Matrix::Representation>& l, 
+                        std::unique_ptr<Matrix::Representation>& r) override;
 
             };
 
@@ -79,29 +73,26 @@ namespace Matrix {
 
             Matrix::Operations::Multiplication::Naive mul;
 
-            std::unique_ptr<Matrix::Representation> mc = mul(*ma, *mb);
+            std::unique_ptr<Matrix::Representation> mc = mul(ma, mb);
         */
         namespace Multiplication {
 
-            class BaseMul : BaseOp {
 
-            };
-
-            class Naive : public BaseMul {
+            class Naive : public BaseOp {
 
                 public:
                     std::unique_ptr<Matrix::Representation> operator()(
-                        Matrix::Representation l, 
-                        Matrix::Representation r) override;
+                        std::unique_ptr<Matrix::Representation>& l, 
+                        std::unique_ptr<Matrix::Representation>& r) override;
 
             };
 
-            class Square : public BaseMul {
+            class Square : public BaseOp {
 
                             public:
                                 std::unique_ptr<Matrix::Representation> operator()(
-                                    Matrix::Representation l, 
-                                    Matrix::Representation r) override;
+                                    std::unique_ptr<Matrix::Representation>& l, 
+                                    std::unique_ptr<Matrix::Representation>& r) override;
 
                         };
 

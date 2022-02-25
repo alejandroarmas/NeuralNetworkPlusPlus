@@ -22,8 +22,8 @@ TEST_CASE("Matrix Multiplication", "[arithmetic]")
     Matrix::Operations::Multiplication::Naive naive_mul;
     Matrix::Operations::Multiplication::Square c_mul;
 
-    std::unique_ptr<Matrix::Representation> mc = naive_mul(*ma, *mb);
-    std::unique_ptr<Matrix::Representation> md = c_mul(*ma, *mb);
+    std::unique_ptr<Matrix::Representation> mc = naive_mul(ma, mb);
+    std::unique_ptr<Matrix::Representation> md = c_mul(ma, mb);
 
 
 

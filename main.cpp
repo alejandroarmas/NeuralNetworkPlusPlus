@@ -7,15 +7,13 @@
 #include "matrix_printer.h"
 #include "network_layer.h"
 #include "m_algorithms.h"
-
+#include "matrix_benchmark.h"
 
 
 int main(void) {
 
     using matrix_t = Matrix::Representation; 
 
-    struct timespec start, end;
-    
     std::unique_ptr<matrix_t> ma = std::make_unique<matrix_t>(4000, 2000);
     std::unique_ptr<matrix_t> mb = std::make_unique<matrix_t>(2000, 3000);
 
@@ -27,22 +25,27 @@ int main(void) {
     mb = normal_distribution_init(std::move(mb));
 
 
-    Matrix::Printer m_printer;
+    // Matrix::Printer m_printer;
 
 
-    Matrix::Operations::Multiplication::Naive mul;
-    clock_gettime(CLOCK_MONOTONIC, &start);
+    // Matrix::Operations::Multiplication::Square mul;
 
-    std::unique_ptr<matrix_t> mc = mul(*ma, *mb);
+    std::unique_ptr<Matrix::Operations::Multiplication::Square> mul_ptr = std::make_unique<Matrix::Operations::Multiplication::Square>();
+    std::unique_ptr<Matrix::Operations::Multiplication::Naive> nmul_ptr = std::make_unique<Matrix::Operations::Multiplication::Naive>();
+
+
+
+    // std::unique_ptr<matrix_t> mc = mul_ptr->operator()(ma, mb);
     
-    clock_gettime(CLOCK_MONOTONIC, &end);
+    Matrix::Benchmark mul_bm(std::move(mul_ptr));
 
-    double tdiff = (end.tv_sec - start.tv_sec) + 1e-9*(end.tv_nsec - start.tv_nsec);
+    std::unique_ptr<matrix_t> mc = mul_bm(ma, mb);
+    Matrix::Benchmark nmul_bm(std::move(nmul_ptr));
+    std::unique_ptr<matrix_t> md = nmul_bm(ma, mb);
 
-    m_printer(*mc);
-
-    std::cout << "Matrix Multiply took: " << tdiff << " Seconds." << std::endl;
     
+    // m_printer(*mc);
+
 
     return 0;
 }
