@@ -87,6 +87,7 @@ namespace Matrix {
 
             };
 
+
             class Square : public BaseOp {
 
                             public:
@@ -94,8 +95,22 @@ namespace Matrix {
                                     std::unique_ptr<Matrix::Representation>& l, 
                                     std::unique_ptr<Matrix::Representation>& r) override;
 
-                        };
+            };
 
+
+            class RecursiveParallel : public BaseOp {
+
+                            public:
+                                std::unique_ptr<Matrix::Representation> operator()(
+                                    std::unique_ptr<Matrix::Representation>& l, 
+                                    std::unique_ptr<Matrix::Representation>& r) override;
+
+            };
+
+
+            void add_matmul_rec(std::vector<float>::iterator c, std::vector<float>::iterator a, std::vector<float>::iterator b, 
+                    int m, int n, int p, int fdA, int fdB, int fdC);
+            
 
 
         }

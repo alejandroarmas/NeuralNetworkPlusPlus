@@ -7,10 +7,8 @@
 
 TEST_CASE("Matrix Multiplication", "[arithmetic]")
 {
-    using matrix_t = Matrix::Representation; 
-
-    std::unique_ptr<matrix_t> ma = std::make_unique<matrix_t>(20, 100);
-    std::unique_ptr<matrix_t> mb = std::make_unique<matrix_t>(100, 30);
+    std::unique_ptr<Matrix::Representation> mb = std::make_unique<Matrix::Representation>(100, 30);
+    std::unique_ptr<Matrix::Representation> ma = std::make_unique<Matrix::Representation>(20, 100);
     
 
     Matrix::Generation::Normal<0, 1> normal_distribution_init;
@@ -21,9 +19,11 @@ TEST_CASE("Matrix Multiplication", "[arithmetic]")
 
     Matrix::Operations::Multiplication::Naive naive_mul;
     Matrix::Operations::Multiplication::Square c_mul;
+    Matrix::Operations::Multiplication::RecursiveParallel r_mul;
 
     std::unique_ptr<Matrix::Representation> mc = naive_mul(ma, mb);
     std::unique_ptr<Matrix::Representation> md = c_mul(ma, mb);
+    std::unique_ptr<Matrix::Representation> me = r_mul(ma, mb);
 
 
 
@@ -31,6 +31,13 @@ TEST_CASE("Matrix Multiplication", "[arithmetic]")
     {
 
         REQUIRE((*mc == *md) == true);
+    }
+
+
+
+    SECTION("Recursive Parallel Multiplication")
+    {
+        REQUIRE((*mc == *me) == true);
     }
 
 }

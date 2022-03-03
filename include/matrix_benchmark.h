@@ -7,7 +7,7 @@
 #include "m_algorithms.h"
 
 namespace Matrix {
-G
+
 
     /* EXAMPLE USAGE:    
     
