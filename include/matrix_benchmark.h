@@ -28,18 +28,42 @@ namespace Matrix {
     std::unique_ptr<matrix_t> mc = mul_bm(ma, mb);
     
     */
-    class Benchmark {
+
+   class Benchmark {
+
+            protected:
+                Benchmark(std::unique_ptr<Operations::BaseOp> _m) : matrix_operation(std::move(_m)) {}
+                virtual std::unique_ptr<Representation> operator()(
+                    std::unique_ptr<Representation>& l, 
+                    std::unique_ptr<Representation>& r) = 0;
+                virtual ~Benchmark() = default;
+            protected:
+                std::unique_ptr<Operations::BaseOp> matrix_operation;
+
+   };
+
+    class Timer : public Benchmark {
 
         public:
-            Benchmark(std::unique_ptr<Operations::BaseOp> _m) : matrix_operation(std::move(_m)) {}
-            
+            Timer(std::unique_ptr<Operations::BaseOp> _m) : Benchmark(std::move(_m)) {}
             std::unique_ptr<Representation> operator()(
-                    std::unique_ptr<Matrix::Representation>& l, 
-                    std::unique_ptr<Matrix::Representation>& r); 
-        private:
-            std::unique_ptr<Operations::BaseOp> matrix_operation;
+                    std::unique_ptr<Representation>& l, 
+                    std::unique_ptr<Representation>& r) override; 
 
     };
+
+
+// #ifdef CILKSCALE
+    class ParallelMeasurer : public Benchmark {
+
+        public:
+            ParallelMeasurer(std::unique_ptr<Operations::BaseOp> _m) : Benchmark(std::move(_m)) {}
+            std::unique_ptr<Representation> operator()(
+                    std::unique_ptr<Representation>& l, 
+                    std::unique_ptr<Representation>& r) override; 
+
+    };
+// #endif
 
 
 }

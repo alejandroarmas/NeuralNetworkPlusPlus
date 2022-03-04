@@ -2,15 +2,27 @@ all: matrix_multiply run_unit_tests
 
 CC = clang++
 
+PERFORMANCE_PROFILE_DIR = profiles
+
 CPPFLAGS = -Werror -I include -fopencilk -std=c++14 -pthread
+LDFLAGS = -L$(CURDIR)/include -lstdc++ -lm -fopencilk
 
 ifeq ($(DEBUG), 1)
-	CPPFLAGS += -O0 -g -gdwarf-3 
+	CPPFLAGS += -Og -g -gdwarf-3 
 else
 	CPPFLAGS += -Wall -O3 -gdwarf-3 
 endif
 
-LDFLAGS = -L$(CURDIR)/include -lstdc++ -lm -fopencilk
+ifeq ($(CILKSAN),1)
+	CFLAGS += -Og -g -fsanitize=cilk -DCILKSAN=1 -D_FORTIFY_SOURCE=0
+	LDFLAGS += -fsanitize=cilk
+else ifeq ($(CILKSCALE),1)
+	CFLAGS  += -fcilktool=cilkscale -DCILKSCALE=1 -O3
+	LDFLAGS += -fcilktool=cilkscale
+else ifeq ($(PROFILE), 1)
+	CFLAGS += -fprofile-generate = $(PERFORMANCE_PROFILE_DIR)
+endif
+
 
 VPATH = shared
 
