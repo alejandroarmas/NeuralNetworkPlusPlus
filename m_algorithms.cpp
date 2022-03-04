@@ -2,6 +2,7 @@
 
 #include <cilk/cilk.h>
 #include <cilk/reducer.h>
+#include <iostream>
 
 
 namespace Matrix {
@@ -108,31 +109,60 @@ namespace Matrix {
                 return output;
             }
 
-            /*
-            Assume that n is an exact power of 2.
             
-            
-            void Rec_Mult(double *C, double *A, double *B,
-                        int64_t n, int64_t rowsize) {
-            if (n == 1)
-                C[0] += A[0] * B[0];
-            else {
-                int64_t d11 = 0;
-                int64_t d12 = n/2;
-                int64_t d21 = (n/2) * rowsize;
-                int64_t d22 = (n/2) * (rowsize+1);
-                cilk_spawn Rec_Mult(C+d11, A+d11, B+d11, n/2, rowsize);
-                cilk_spawn Rec_Mult(C+d21, A+d22, B+d21, n/2, rowsize);
-                cilk_spawn Rec_Mult(C+d12, A+d11, B+d12, n/2, rowsize);
-                Rec_Mult(C+d22, A+d22, B+d22, n/2, rowsize);
-                cilk_sync;
-                cilk_spawn Rec_Mult(C+d11, A+d12, B+d21, n/2, rowsize);
-                cilk_spawn Rec_Mult(C+d21, A+d21, B+d11, n/2, rowsize);
-                cilk_spawn Rec_Mult(C+d12, A+d12, B+d22, n/2, rowsize);
-                Rec_Mult(C+d22, A+d21, B+d12, n/2, rowsize);
-                cilk_sync;
-            } }
-            */
+                /*
+                Adapted from https://ocw.mit.edu/courses/mathematics/18-335j-introduction-to-numerical-methods-spring-2019/week-5/MIT18_335JS19_lec12.pdf
+                */
+                void add_matmul_rec(std::vector<float>::iterator a, std::vector<float>::iterator b, std::vector<float>::iterator c, 
+                    int m, int n, int p, int fdA, int fdB, int fdC) {
+                    
+                    if (m + n + p <= 48) {  
+                        int i, j, k;
+                        
+                        for (i = 0; i < m; ++i) {
+                            for (k = 0; k < p; ++k) { 
+                                float sum = 0;
+                                for (j = 0; j < n; ++j)
+                                    sum += *(a + (i * fdA + j)) * *(b + (j * fdB + k));
+                                *(c + (i * fdC + k)) += sum;
+                    
+                            }
+                        }
+                    }
+                    else {  
+                        int m2 = m/2, n2 = n/2, p2 = p/2;
+                
+                         cilk_spawn add_matmul_rec(a, b, c, m2, n2, p2, fdA, fdB, fdC); 
+                         cilk_spawn add_matmul_rec(a, b + p2, c + p2, m2, n2, p - p2, fdA, fdB, fdC); 
+                         cilk_spawn add_matmul_rec(a + m2*fdA + n2, b + n2*fdB, c + m2*fdC, m-m2, n - n2, p2, fdA, fdB, fdC);
+                         add_matmul_rec(a + m2*fdA + n2, b + p2 + n2*fdB, c + m2*fdC + p2, m - m2, n - n2, p - p2, fdA, fdB, fdC);
+                         cilk_sync;
+              
+                         cilk_spawn add_matmul_rec(a + n2, b + n2*fdB, c, m2, n - n2, p2, fdA, fdB, fdC);
+                         cilk_spawn add_matmul_rec(a + m2*fdA, b, c + m2*fdC, m - m2, n2, p2, fdA, fdB, fdC); 
+                         cilk_spawn add_matmul_rec(a + n2       , b + p2 + n2*fdB, c + p2, m2, n - n2, p - p2, fdA, fdB, fdC);
+                         add_matmul_rec(a + m2*fdA, b + p2, c + m2*fdC + p2, m - m2, n2, p - p2, fdA, fdB, fdC);
+                         cilk_sync;
+                    }
+                }
+
+
+            std::unique_ptr<Matrix::Representation> ParallelDNC::operator()(
+                    std::unique_ptr<Matrix::Representation>& l, 
+                    std::unique_ptr<Matrix::Representation>& r) {
+
+                if (l->num_cols() != r->num_rows()) {
+                    throw std::length_error("Matrix A columns not equal to Matrix B rows.");
+                }
+
+                std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(l->num_rows(), r->num_cols());
+
+                add_matmul_rec(l->scanStart(), r->scanStart(), output->scanStart(), l->num_rows(), l->num_cols(), r->num_cols(), l->num_cols(), r->num_cols(), r->num_cols());
+
+                return output;
+            }
+    
+    
             std::unique_ptr<Matrix::Representation> Square::operator()(
                     std::unique_ptr<Matrix::Representation>& l, 
                     std::unique_ptr<Matrix::Representation>& r) {

@@ -98,7 +98,7 @@ namespace Matrix {
             };
 
 
-            class RecursiveParallel : public BaseOp {
+            class ParallelDNC : public BaseOp {
 
                             public:
                                 std::unique_ptr<Matrix::Representation> operator()(

@@ -7,8 +7,8 @@
 
 TEST_CASE("Matrix Multiplication", "[arithmetic]")
 {
-    std::unique_ptr<Matrix::Representation> mb = std::make_unique<Matrix::Representation>(100, 30);
-    std::unique_ptr<Matrix::Representation> ma = std::make_unique<Matrix::Representation>(20, 100);
+    std::unique_ptr<Matrix::Representation> mb = std::make_unique<Matrix::Representation>(1000, 300);
+    std::unique_ptr<Matrix::Representation> ma = std::make_unique<Matrix::Representation>(200, 1000);
     
 
     Matrix::Generation::Normal<0, 1> normal_distribution_init;
@@ -19,7 +19,7 @@ TEST_CASE("Matrix Multiplication", "[arithmetic]")
 
     Matrix::Operations::Multiplication::Naive naive_mul;
     Matrix::Operations::Multiplication::Square c_mul;
-    Matrix::Operations::Multiplication::RecursiveParallel r_mul;
+    Matrix::Operations::Multiplication::ParallelDNC r_mul;
 
     std::unique_ptr<Matrix::Representation> mc = naive_mul(ma, mb);
     std::unique_ptr<Matrix::Representation> md = c_mul(ma, mb);
