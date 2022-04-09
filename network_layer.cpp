@@ -35,7 +35,7 @@ std::unique_ptr<Matrix::Representation> NeuralNetwork::Sequential::forward(std::
     std::unique_ptr<Matrix::Representation> current_value = std::move(input);
 
     std::for_each(this->_modules.begin(), this->_modules.end(), 
-        [&current_value](std::pair<const unsigned int, std::unique_ptr<ComputationalStep>>& _layer){
+        [&current_value](std::pair<const unsigned int, std::unique_ptr<Step>>& _layer){
 
             current_value = _layer.second->forward(std::move(current_value));
         });
@@ -45,6 +45,6 @@ std::unique_ptr<Matrix::Representation> NeuralNetwork::Sequential::forward(std::
 }
 
 
-void NeuralNetwork::Sequential::add(std::unique_ptr<ComputationalStep> layer) {
+void NeuralNetwork::Sequential::add(std::unique_ptr<Step> layer) {
     this->_modules.emplace(this->last_key++, std::move(layer));
 }
