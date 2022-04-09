@@ -13,8 +13,9 @@ namespace Matrix {
 
 
     class Representation {
-            typedef typename std::vector<float>::iterator matrix_iter;
         public:
+            typedef typename std::vector<float>::iterator matrix_iter;
+            
             Representation(u_int64_t _l, u_int64_t _w) : rows(_l), columns(_w), data(std::vector<float>(_l * _w, 0)) {}
             Representation(const Matrix::Representation& _other) : rows(_other.rows), columns(_other.columns), data(_other.data) {}
             
