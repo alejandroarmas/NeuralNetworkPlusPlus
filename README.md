@@ -19,6 +19,15 @@ This project utilizes efficient parallel code via **OpenCilk** for shared-multic
 ```
 
 
+### Highlights
+
+Achieves a 5000x5000 dense Matrix Multiplication in 6.33143 Seconds using `Matrix::Operations::Multiplication::ParallelDNC`, compared the naive implementation `Matrix::Operations::Multiplication::Naive` of 898.936 Seconds on an M1 Max. That's a 141.9799x speedup! 
+
+M1 max has theoretical maximum of 239.616 GFLOPS.
+
+(3.228 GHz x 8 cores + 2 x 2.064 GHz) x 8 instructions/cycle = 239.616 GFLOPS
+
+
 
 
 [1]: [Schardl, T. B., Moses, W. S., & Leiserson, C. E. (2017). Tapir: Embedding Fork-Join Parallelism into LLVM’s Intermediate Representation. PPoPP, 249–265. https://doi.org/10.1145/3018743.3018758](https://doi.org/10.1145/3018743.3018758)
