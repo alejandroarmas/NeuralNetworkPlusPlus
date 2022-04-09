@@ -17,16 +17,16 @@
 namespace NeuralNetwork {
 
 
-    class Step {
+    class StepInterface {
 
         public:
-            ~Step() = default;
-            std::unique_ptr<Matrix::Representation> forward(std::unique_ptr<Matrix::Representation> input) {return nullptr; };
+            virtual ~StepInterface() = default;
+            virtual std::unique_ptr<Matrix::Representation> forward(std::unique_ptr<Matrix::Representation> input) = 0;
             };
 
 
     template <class Implementation>
-    class ComputationalStep: public Step {
+    class ComputationalStep: public StepInterface {
 
         public:
             std::unique_ptr<Matrix::Representation> forward(std::unique_ptr<Matrix::Representation> input) { 
@@ -78,9 +78,9 @@ namespace NeuralNetwork {
             Sequential() : last_key(0) {}
             ~Sequential() = default;
             std::unique_ptr<Matrix::Representation> forward(std::unique_ptr<Matrix::Representation> input);
-            void add(std::unique_ptr<Step> layer);
+            void add(std::unique_ptr<StepInterface> layer);
         private:
-            std::map<const unsigned int, std::unique_ptr<Step>> _modules;
+            std::map<const unsigned int, std::unique_ptr<StepInterface>> _modules;
             unsigned int last_key;
 
 

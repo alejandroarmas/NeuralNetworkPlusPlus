@@ -14,6 +14,10 @@ std::unique_ptr<Matrix::Representation> NeuralNetwork::Layer::forward(std::uniqu
     Matrix::Operations::Multiplication::ParallelDNC mm;
     Matrix::Operations::Addition::Std add;
 
+    if (input == nullptr) {
+        throw std::invalid_argument("Matrix has no data (pointing to null).");
+    }
+
 
     auto out = mm(input, this->weights);
 
@@ -22,7 +26,7 @@ std::unique_ptr<Matrix::Representation> NeuralNetwork::Layer::forward(std::uniqu
 
 #if DEBUG
     Matrix::Printer m_printer;
-    m_printer(*z);
+    z = m_printer(std::move(z));
 #endif
 
 
@@ -35,7 +39,7 @@ std::unique_ptr<Matrix::Representation> NeuralNetwork::Sequential::forward(std::
     std::unique_ptr<Matrix::Representation> current_value = std::move(input);
 
     std::for_each(this->_modules.begin(), this->_modules.end(), 
-        [&current_value](std::pair<const unsigned int, std::unique_ptr<Step>>& _layer){
+        [&current_value](std::pair<const unsigned int, std::unique_ptr<StepInterface>>& _layer){
 
             current_value = _layer.second->forward(std::move(current_value));
         });
@@ -45,6 +49,6 @@ std::unique_ptr<Matrix::Representation> NeuralNetwork::Sequential::forward(std::
 }
 
 
-void NeuralNetwork::Sequential::add(std::unique_ptr<Step> layer) {
+void NeuralNetwork::Sequential::add(std::unique_ptr<StepInterface> layer) {
     this->_modules.emplace(this->last_key++, std::move(layer));
 }

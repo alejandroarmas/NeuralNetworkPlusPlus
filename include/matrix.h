@@ -17,7 +17,7 @@ namespace Matrix {
             typedef typename std::vector<float>::iterator matrix_iter;
             
             Representation(u_int64_t _l, u_int64_t _w) : rows(_l), columns(_w), data(std::vector<float>(_l * _w, 0)) {}
-            Representation(const Matrix::Representation& _other) : rows(_other.rows), columns(_other.columns), data(_other.data) {}
+            Representation(const Matrix::Representation& _other) : rows(_other.num_rows()), columns(_other.num_cols()), data(std::move(_other.data)) {}
             
             bool operator==(const Matrix::Representation& _other);
             bool operator!=(const Matrix::Representation& _other);

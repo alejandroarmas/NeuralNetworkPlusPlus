@@ -27,7 +27,7 @@ endif
 VPATH = shared
 
 MAIN = main.o
-OBJS = main.o matrix.o generator.o matrix_printer.o functions.o network_layer.o m_algorithms.o matrix_benchmark.o
+OBJS = main.o matrix.o generator.o matrix_printer.o functions.o network_layer.o m_algorithms.o matrix_benchmark.o activation_functions.o
 OBJS_FOR_UNIT_TEST = $(foreach obj, $(OBJS), $(filter-out $(MAIN), $(wildcard *.o))) 
 
 
