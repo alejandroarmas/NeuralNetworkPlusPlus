@@ -9,17 +9,17 @@
 namespace Matrix {
 
 
+    template <class MatrixOperation> 
+    class Benchmark {
 
-   class Benchmark {
-
+            public:
+                Benchmark(std::unique_ptr<Operations::BaseOp<MatrixOperation>> _m) : matrix_operation(std::move(_m)) {}
             protected:
-                Benchmark(std::unique_ptr<Operations::BaseOp> _m) : matrix_operation(std::move(_m)) {}
                 virtual std::unique_ptr<Representation> operator()(
                     std::unique_ptr<Representation>& l, 
                     std::unique_ptr<Representation>& r) = 0;
                 virtual ~Benchmark() = default;
-            protected:
-                std::unique_ptr<Operations::BaseOp> matrix_operation;
+                std::unique_ptr<Operations::BaseOp<MatrixOperation>> matrix_operation;
 
    };
 
@@ -31,7 +31,7 @@ namespace Matrix {
         Decorator for BaseOp() class Function objects, used to benchmark algorithm performance.
 
     USAGE:
-
+      
         using matrix_t = Matrix::Representation; 
         std::unique_ptr<matrix_t> ma = std::make_unique<matrix_t>(5000, 5000);
         std::unique_ptr<matrix_t> mb = std::make_unique<matrix_t>(5000, 5000);
@@ -41,14 +41,15 @@ namespace Matrix {
         mb = normal_distribution_init(std::move(mb));
 
         std::unique_ptr<Matrix::Operations::Multiplication::ParallelDNC> mul_ptr_r       = std::make_unique<Matrix::Operations::Multiplication::ParallelDNC>();
-        Matrix::Timer mul_bm_r(std::move(mul_ptr_r));
+        Matrix::Timer<Matrix::Operations::Multiplication::ParallelDNC> mul_bm_r(std::move(mul_ptr_r));
         std::unique_ptr<matrix_t> mf = mul_bm_r(ma, mb);
-
+    
     */
-    class Timer : public Benchmark {
+    template <class MatrixOperation>
+    class Timer : public Benchmark<MatrixOperation> {
 
         public:
-            Timer(std::unique_ptr<Operations::BaseOp> _m) : Benchmark(std::move(_m)) {}
+            Timer(std::unique_ptr<Operations::BaseOp<MatrixOperation>> _m) : Benchmark<MatrixOperation>(std::move(_m)) {}
             std::unique_ptr<Representation> operator()(
                     std::unique_ptr<Representation>& l, 
                     std::unique_ptr<Representation>& r) override; 
@@ -57,10 +58,11 @@ namespace Matrix {
 
 
 // #ifdef CILKSCALE
-    class ParallelMeasurer : public Benchmark {
+    template <class MatrixOperation>
+    class ParallelMeasurer : public Benchmark<MatrixOperation> {
 
         public:
-            ParallelMeasurer(std::unique_ptr<Operations::BaseOp> _m) : Benchmark(std::move(_m)) {}
+            ParallelMeasurer(std::unique_ptr<Operations::BaseOp<MatrixOperation>> _m) : Benchmark<MatrixOperation>(std::move(_m)) {}
             std::unique_ptr<Representation> operator()(
                     std::unique_ptr<Representation>& l, 
                     std::unique_ptr<Representation>& r) override; 
@@ -70,5 +72,7 @@ namespace Matrix {
 
 
 }
+
+#include "t_matrix_benchmark.cpp"
 
 #endif //MATRIX_BENCHMARKER_H

@@ -12,21 +12,35 @@ namespace Matrix {
 
     namespace Operations {
 
+        template <class Implementation>
         class BaseOp {
 
             public:
                 virtual std::unique_ptr<Matrix::Representation> operator()(
                     std::unique_ptr<Matrix::Representation>& l, 
-                    std::unique_ptr<Matrix::Representation>& r) = 0;
+                    std::unique_ptr<Matrix::Representation>& r) { return Impl().operator()(l, r); };
                 virtual ~BaseOp() = default;
+            private:
+                BaseOp& Impl() { return *static_cast<Implementation*>(this); }
+                BaseOp() = default;
+                friend Implementation;
 
         };
+
+
+
+        std::string debug_message(std::unique_ptr<Matrix::Representation>& l, 
+                                std::unique_ptr<Matrix::Representation>& r);
+        
+        std::string debug_message_2(std::unique_ptr<Matrix::Representation>& l, 
+                                std::unique_ptr<Matrix::Representation>& r);
+
 
 
         namespace Addition {
 
 
-            class Std : public BaseOp {
+            class Std : public BaseOp<Std> {
                 public:
                     std::unique_ptr<Matrix::Representation> operator()(
                         std::unique_ptr<Matrix::Representation>& l, 
@@ -36,11 +50,27 @@ namespace Matrix {
 
         }
 
+        namespace OuterProduct {
+
+
+
+            class Naive : public BaseOp<Naive> {
+                public:
+                    std::unique_ptr<Matrix::Representation> operator()(
+                        std::unique_ptr<Matrix::Representation>& l, 
+                        std::unique_ptr<Matrix::Representation>& r) override;
+
+            };
+
+
+
+        }
+
 
         namespace HadamardProduct {
 
             
-            class Naive : public BaseOp {
+            class Naive : public BaseOp<Naive> {
 
                 public:
                     std::unique_ptr<Matrix::Representation> operator()(
@@ -50,7 +80,7 @@ namespace Matrix {
             };
 
 
-            class Std : public BaseOp {
+            class Std : public BaseOp<Naive> {
 
                 public:
                     std::unique_ptr<Matrix::Representation> operator()(
@@ -78,7 +108,7 @@ namespace Matrix {
         namespace Multiplication {
 
 
-            class Naive : public BaseOp {
+            class Naive : public BaseOp<Naive> {
 
                 public:
                     std::unique_ptr<Matrix::Representation> operator()(
@@ -88,7 +118,7 @@ namespace Matrix {
             };
 
 
-            class Square : public BaseOp {
+            class Square : public BaseOp<Square> {
 
                             public:
                                 std::unique_ptr<Matrix::Representation> operator()(
@@ -98,7 +128,7 @@ namespace Matrix {
             };
 
 
-            class ParallelDNC : public BaseOp {
+            class ParallelDNC : public BaseOp<ParallelDNC> {
 
                             public:
                                 std::unique_ptr<Matrix::Representation> operator()(
@@ -110,8 +140,7 @@ namespace Matrix {
 
             void add_matmul_rec(std::vector<float>::iterator c, std::vector<float>::iterator a, std::vector<float>::iterator b, 
                     int m, int n, int p, int fdA, int fdB, int fdC);
-            
-
+                
 
         }
 
