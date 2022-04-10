@@ -10,6 +10,35 @@ namespace Matrix {
     namespace Operations {
 
 
+
+        std::string debug_message(std::unique_ptr<Matrix::Representation>&l, 
+                std::unique_ptr<Matrix::Representation>&r) {
+
+            std::string error_msg = "Matrix A Columns not equal to Matrix B Rows: [" + 
+                std::to_string(l->num_rows()) + "," + 
+                std::to_string(l->num_cols()) + "] X [" + 
+                std::to_string(r->num_rows()) + "," + 
+                std::to_string(r->num_cols()) + "]";
+
+
+            return error_msg;
+            }
+
+
+        std::string debug_message_2(std::unique_ptr<Matrix::Representation>&l, 
+                std::unique_ptr<Matrix::Representation>&r) {
+            
+            std::string error_msg = "Matrix A size not equal to Matrix B: [" + 
+                std::to_string(l->num_rows()) + "," + 
+                std::to_string(l->num_cols()) + "] X [" + 
+                std::to_string(r->num_rows()) + "," + 
+                std::to_string(r->num_cols()) + "]";
+
+
+            return error_msg;
+            }
+
+
         namespace Addition {
 
             std::unique_ptr<Matrix::Representation> Std::operator()(
@@ -17,7 +46,7 @@ namespace Matrix {
                     std::unique_ptr<Matrix::Representation>& r) {
 
                 if ((l->num_rows() != r->num_rows()) && (l->num_cols() != r->num_cols())) {
-                    throw std::length_error("Matrix A not same size as Matrix B.");
+                    throw std::length_error(debug_message_2(l, r));
                 }
                     
                 auto output = std::make_unique<Matrix::Representation>(l->num_rows(), r->num_cols());
@@ -26,6 +55,46 @@ namespace Matrix {
 
                 return output;
             }
+        }
+
+
+        namespace OuterProduct {
+
+
+            std::unique_ptr<Matrix::Representation> Naive::operator()(
+                    std::unique_ptr<Matrix::Representation>& l, 
+                    std::unique_ptr<Matrix::Representation>& r) {
+
+                if (l->num_rows() != r->num_rows() && l->num_cols() != r->num_cols()) {
+                    throw std::length_error(debug_message_2(l, r));
+                }
+                if (l->num_rows() != 1 && l->num_cols() != 1) {
+                    throw std::length_error("Operands are not Vectors.");
+                }
+                
+                u_int64_t dimension; 
+
+                if (l->num_rows() > l->num_cols()) {
+                     dimension = l->num_rows(); 
+                }
+                else dimension = l->num_cols(); 
+
+                auto output = std::make_unique<Matrix::Representation>(dimension, dimension);
+
+                auto li = l->scanStart();
+
+                for (int i = 0; li != l->scanEnd(); li++, i++) {
+                    auto ri = r->scanStart();
+                    
+                    for (int j = 0; ri != r->scanEnd(); ri++, j++) {
+                        float val = *li * *ri;
+                        output->put(i, j, val);
+                    }
+                }
+                
+                return output;
+            }
+
         }
 
 
@@ -81,7 +150,8 @@ namespace Matrix {
                     std::unique_ptr<Matrix::Representation>& r) {
 
                 if (l->num_cols() != r->num_rows()) {
-                    throw std::length_error("Matrix A columns not equal to Matrix B rows.");
+                    throw std::length_error(debug_message(l, r));
+
                 }
 
                 std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(l->num_rows(), r->num_cols());
@@ -152,7 +222,8 @@ namespace Matrix {
                     std::unique_ptr<Matrix::Representation>& r) {
 
                 if (l->num_cols() != r->num_rows()) {
-                    throw std::length_error("Matrix A columns not equal to Matrix B rows.");
+                    
+                    throw std::length_error(debug_message(l, r));
                 }
 
                 std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(l->num_rows(), r->num_cols());
@@ -168,7 +239,8 @@ namespace Matrix {
                     std::unique_ptr<Matrix::Representation>& r) {
 
                 if (l->num_cols() != r->num_rows()) {
-                    throw std::length_error("Matrix A columns not equal to Matrix B rows.");
+                    throw std::length_error(debug_message(l, r));
+
                 }
 
                 std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(l->num_rows(), r->num_cols());
@@ -200,8 +272,6 @@ namespace Matrix {
     }
 
 }
-
-
 
 
 
