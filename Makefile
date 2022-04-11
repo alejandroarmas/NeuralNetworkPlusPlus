@@ -4,7 +4,7 @@ CC = clang++
 
 PERFORMANCE_PROFILE_DIR = profiles
 
-CPPFLAGS = -Werror -I include -fopencilk -std=c++14 -pthread
+CPPFLAGS = -Werror -I include -fopencilk -std=c++2a -pthread
 LDFLAGS = -L$(CURDIR)/include -lstdc++ -lm -fopencilk
 
 ifeq ($(DEBUG), 1)
@@ -27,7 +27,7 @@ endif
 VPATH = shared
 
 MAIN = main.o
-OBJS = main.o matrix.o generator.o matrix_printer.o functions.o network_layer.o m_algorithms.o matrix_benchmark.o activation_functions.o
+OBJS = main.o matrix.o generator.o matrix_printer.o functions.o network_layer.o m_algorithms.o matrix_benchmark.o activation_functions.o context_object.o forward_node_handlers.o tensor.o
 OBJS_FOR_UNIT_TEST = $(foreach obj, $(OBJS), $(filter-out $(MAIN), $(wildcard *.o))) 
 
 
