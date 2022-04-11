@@ -1,7 +1,6 @@
 #include "m_algorithms.h"
 
 #include <cilk/cilk.h>
-#include <cilk/reducer.h>
 #include <iostream>
 
 
@@ -49,7 +48,7 @@ namespace Matrix {
                     throw std::length_error(debug_message_2(l, r));
                 }
                     
-                auto output = std::make_unique<Matrix::Representation>(l->num_rows(), r->num_cols());
+                auto output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
 
                 std::transform(l->scanStart(), l->scanEnd(), r->scanStart(), output->scanStart(), std::plus<float>());
 
@@ -79,7 +78,7 @@ namespace Matrix {
                 }
                 else dimension = l->num_cols(); 
 
-                auto output = std::make_unique<Matrix::Representation>(dimension, dimension);
+                auto output = std::make_unique<Matrix::Representation>(Rows(dimension), Columns(dimension));
 
                 auto li = l->scanStart();
 
@@ -104,7 +103,7 @@ namespace Matrix {
                     std::unique_ptr<Matrix::Representation>& l, 
                     std::unique_ptr<Matrix::Representation>& r) {
 
-                    auto output = std::make_unique<Matrix::Representation>(l->num_rows(), r->num_cols());
+                    auto output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
 
                     
                     std::transform(l->scanStart(), l->scanEnd(), r->scanStart(), output->scanStart(), std::multiplies<float>()); 
@@ -121,7 +120,7 @@ namespace Matrix {
                     throw std::length_error("Matrix A not same size as Matrix B.");
                 }
 
-                std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(l->num_rows(), r->num_cols());
+                std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
 
 
                 for (u_int64_t i = 0; i < l->num_rows(); i++) {
@@ -154,7 +153,7 @@ namespace Matrix {
 
                 }
 
-                std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(l->num_rows(), r->num_cols());
+                std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
 
 
                 for (u_int64_t i = 0; i < l->num_rows(); i++) {
@@ -226,7 +225,7 @@ namespace Matrix {
                     throw std::length_error(debug_message(l, r));
                 }
 
-                std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(l->num_rows(), r->num_cols());
+                std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
 
                 add_matmul_rec(l->scanStart(), r->scanStart(), output->scanStart(), l->num_rows(), l->num_cols(), r->num_cols(), l->num_cols(), r->num_cols(), r->num_cols());
 
@@ -243,7 +242,7 @@ namespace Matrix {
 
                 }
 
-                std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(l->num_rows(), r->num_cols());
+                std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
 
 
                 cilk_for (u_int64_t i = 0; i < l->num_rows(); i++) {
@@ -272,12 +271,4 @@ namespace Matrix {
     }
 
 }
-
-
-
-
-
-
-
-
 

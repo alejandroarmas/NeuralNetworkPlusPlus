@@ -8,10 +8,10 @@ TEST_CASE("Equality Test", "[arithmetic]")
 {
     using matrix_t = Matrix::Representation; 
 
-    std::unique_ptr<matrix_t> ma = std::make_unique<matrix_t>(2000, 100);
-    std::unique_ptr<matrix_t> mb = std::make_unique<matrix_t>(100, 3000);
-    std::unique_ptr<matrix_t> mc = std::make_unique<matrix_t>(10, 30);
-    std::unique_ptr<matrix_t> md = std::make_unique<matrix_t>(10, 30);
+    std::unique_ptr<matrix_t> ma = std::make_unique<matrix_t>(Matrix::Rows(2000), Matrix::Columns(100));
+    std::unique_ptr<matrix_t> mb = std::make_unique<matrix_t>(Matrix::Rows(100), Matrix::Columns(3000));
+    std::unique_ptr<matrix_t> mc = std::make_unique<matrix_t>(Matrix::Rows(10), Matrix::Columns(30));
+    std::unique_ptr<matrix_t> md = std::make_unique<matrix_t>(Matrix::Rows(10), Matrix::Columns(30));
 
     Matrix::Generation::Normal<0, 1> normal_distribution_init;
     

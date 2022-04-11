@@ -9,8 +9,8 @@ TEST_CASE("Matrix Addition", "[arithmetic]")
 {
     using matrix_t = Matrix::Representation; 
 
-    std::unique_ptr<matrix_t> matrix_with_ones = std::make_unique<matrix_t>(20, 100);
-    std::unique_ptr<matrix_t> test_output = std::make_unique<matrix_t>(20, 100);
+    std::unique_ptr<matrix_t> matrix_with_ones = std::make_unique<matrix_t>(Matrix::Rows(20), Matrix::Columns(100));
+    std::unique_ptr<matrix_t> test_output = std::make_unique<matrix_t>(Matrix::Rows(20), Matrix::Columns(100));
     
 
     Matrix::Generation::Tester<1> init_as_one;

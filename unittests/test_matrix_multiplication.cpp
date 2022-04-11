@@ -7,8 +7,8 @@
 
 TEST_CASE("Matrix Multiplication", "[arithmetic]")
 {
-    std::unique_ptr<Matrix::Representation> mb = std::make_unique<Matrix::Representation>(1000, 300);
-    std::unique_ptr<Matrix::Representation> ma = std::make_unique<Matrix::Representation>(200, 1000);
+    std::unique_ptr<Matrix::Representation> mb = std::make_unique<Matrix::Representation>(Matrix::Rows(1000), Matrix::Columns(300));
+    std::unique_ptr<Matrix::Representation> ma = std::make_unique<Matrix::Representation>(Matrix::Rows(200), Matrix::Columns(1000));
     
 
     Matrix::Generation::Normal<0, 1> normal_distribution_init;

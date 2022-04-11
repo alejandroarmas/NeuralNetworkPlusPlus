@@ -15,17 +15,27 @@ std::unique_ptr<Matrix::Representation> NeuralNetwork::ActivationFunctions::ReLU
         throw std::invalid_argument("Matrix has no data (pointing to null).");
     }
     
-    std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(input->num_rows(), input->num_cols());
 
+    auto f = [](std::unique_ptr<Matrix::Representation> input) {
 
-    std::replace_copy_if(input->scanStart(), input->scanEnd(), output->scanStart(), 
-        [](float z){ return z < 0;}, 0);
+        std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(
+                    Matrix::Rows(input->num_rows()), 
+                    Matrix::Columns(input->num_cols())
+            );
 
+        std::replace_copy_if(input->scanStart(), input->scanEnd(), output->scanStart(), 
+            [](float z){ return z < 0;}, 0);
+
+        return output;
+    };
+
+    std::unique_ptr<Matrix::Representation> output = f(std::move(input));
 
 #if DEBUG
     Matrix::Printer m_printer;
     output = m_printer(std::move(output));
 #endif
+
 
     return output;
 }
