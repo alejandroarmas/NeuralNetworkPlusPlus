@@ -1,4 +1,3 @@
-
 #include <memory>
 #include <algorithm>
 
@@ -9,19 +8,29 @@
 #include "config.h"
 
 
-std::unique_ptr<Matrix::Representation> NeuralNetwork::Layer::forward(std::unique_ptr<Matrix::Representation> input) {
+std::unique_ptr<Matrix::Representation> NeuralNetwork::MatrixMultiplyStep::forward(std::unique_ptr<Matrix::Representation> input) {
 
     Matrix::Operations::Multiplication::ParallelDNC mm;
+
+
+    auto out = mm(input, this->matrix);
+
+#if DEBUG
+    Matrix::Printer m_printer;
+    out = m_printer(std::move(out));
+#endif
+
+
+    return out;
+}
+
+
+
+std::unique_ptr<Matrix::Representation> NeuralNetwork::AddStep::forward(std::unique_ptr<Matrix::Representation> input) {
+
     Matrix::Operations::Addition::Std add;
 
-    if (input == nullptr) {
-        throw std::invalid_argument("Matrix has no data (pointing to null).");
-    }
-
-
-    auto out = mm(input, this->weights);
-
-    auto z = add(this->bias, out);
+    auto z = add(this->matrix, input);
 
 
 #if DEBUG
@@ -29,8 +38,39 @@ std::unique_ptr<Matrix::Representation> NeuralNetwork::Layer::forward(std::uniqu
     z = m_printer(std::move(z));
 #endif
 
+    return z;
+}
+
+
+std::unique_ptr<Matrix::Representation> NeuralNetwork::Layer::forward(std::unique_ptr<Matrix::Representation> input) {
+
+    if (input == nullptr) {
+        throw std::invalid_argument("Matrix has no data (pointing to null).");
+    }
+
+
+    auto out = this->weights->forward(std::move(input));
+    
+    auto z = this->bias->forward(std::move(out));
+
 
     return z;
+}
+
+
+void NeuralNetwork::Layer::add(std::unique_ptr<StepInterface> matrix) {
+
+    if (matrix == nullptr) {
+        throw std::invalid_argument("Matrix has no data (pointing to null).");
+    }
+
+    if (this->weights == nullptr) {
+        this->weights = std::move(matrix);
+    }
+    else if (this->bias == nullptr) {
+        this->bias    = std::move(matrix);
+    }
+
 }
 
 
