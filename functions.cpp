@@ -37,7 +37,7 @@ T Functions::Activation::Differentiable::Sigmoid<T>::operate(T x) {
 /* --------------------------------------------------
 Code from: https://bitbashing.io/comparing-floats.html
 */
-volatile bool Functions::Utility::compare_float(float a, float b) {
+bool Functions::Utility::compare_float(float a, float b) {
     
     const float difference = fabs(a - b);
     if (difference <= EPSILON) return true;

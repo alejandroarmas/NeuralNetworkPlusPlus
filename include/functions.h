@@ -58,7 +58,7 @@ namespace Functions {
 
             /* Helper Functions for float comparison: */
 
-            volatile bool compare_float(float a, float b);
+            bool compare_float(float a, float b);
             int32_t ulpsDistance(const float a, const float b);
 
             }
