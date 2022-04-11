@@ -12,8 +12,19 @@ namespace Matrix {
 
     namespace Operations {
 
+        class BaseBinaryOpInterface {
+
+            public:
+                virtual ~BaseBinaryOpInterface() = default;
+                virtual std::unique_ptr<Matrix::Representation> operator()(
+                    std::unique_ptr<Matrix::Representation>& l, 
+                    std::unique_ptr<Matrix::Representation>& r) = 0;
+                
+
+        };
+
         template <class Implementation>
-        class BaseOp {
+        class BaseOp : public BaseBinaryOpInterface{
 
             public:
                 virtual std::unique_ptr<Matrix::Representation> operator()(
