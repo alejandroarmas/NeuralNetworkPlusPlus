@@ -17,13 +17,13 @@ TEST_CASE("Matrix Multiplication", "[arithmetic]")
     mb = normal_distribution_init(std::move(mb));
 
 
-    Matrix::Operations::Multiplication::Naive naive_mul;
-    Matrix::Operations::Multiplication::Square c_mul;
-    Matrix::Operations::Multiplication::ParallelDNC r_mul;
+    Matrix::Operations::Binary::Multiplication::Naive naive_mul;
+    Matrix::Operations::Binary::Multiplication::Square c_mul;
+    Matrix::Operations::Binary::Multiplication::ParallelDNC r_mul;
 
-    std::unique_ptr<Matrix::Representation> mc = naive_mul(ma, mb);
-    std::unique_ptr<Matrix::Representation> md = c_mul(ma, mb);
-    std::unique_ptr<Matrix::Representation> me = r_mul(ma, mb);
+    std::unique_ptr<Matrix::Representation> mc = naive_mul(std::move(ma), std::move(mb));
+    std::unique_ptr<Matrix::Representation> md = c_mul(std::move(ma), std::move(mb));
+    std::unique_ptr<Matrix::Representation> me = r_mul(std::move(ma), std::move(mb));
 
 
 

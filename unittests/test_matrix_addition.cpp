@@ -20,9 +20,9 @@ TEST_CASE("Matrix Addition", "[arithmetic]")
     test_output = init_as_two(std::move(test_output));
 
 
-    Matrix::Operations::Addition::Std naive_add;
+    Matrix::Operations::Binary::Addition::Std naive_add;
 
-    std::unique_ptr<Matrix::Representation> sum = naive_add(matrix_with_ones, matrix_with_ones);
+    std::unique_ptr<Matrix::Representation> sum = naive_add(std::move(matrix_with_ones), std::move(matrix_with_ones));
 
 
     SECTION("Cilk-for Multiplication")

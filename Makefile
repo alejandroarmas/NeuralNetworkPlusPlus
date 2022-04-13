@@ -4,7 +4,7 @@ CC = clang++
 
 PERFORMANCE_PROFILE_DIR = profiles
 
-CPPFLAGS = -Werror -I include -fopencilk -std=c++2a -pthread
+CPPFLAGS = -Werror -I include -fopencilk -std=c++2a -pthread 
 LDFLAGS = -L$(CURDIR)/include -lstdc++ -lm -fopencilk
 
 ifeq ($(DEBUG), 1)
