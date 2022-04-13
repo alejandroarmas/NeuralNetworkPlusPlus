@@ -7,7 +7,6 @@
 
 #include "network_layer.h"
 #include "functions.h"
-#include "generator.h"
 #include "matrix.h"
 
 #include <map>
