@@ -5,15 +5,19 @@
 #include "network_layer.h" 
 #include "m_algorithms.h"
 #include "matrix_printer.h"
+#include "matrix_benchmark.h"
 #include "config.h"
 
 
 std::unique_ptr<Matrix::Representation> NeuralNetwork::MatrixMultiplyStep::forward(std::unique_ptr<Matrix::Representation> input) {
 
-    Matrix::Operations::Multiplication::ParallelDNC mm;
+    Matrix::Operations::Timer mm(
+        std::make_unique<Matrix::Operations::Binary::Multiplication::ParallelDNC>());
+
+    // Matrix::Operations::Binary::Multiplication::ParallelDNC mm;
 
 
-    auto out = mm(input, this->matrix);
+    auto out = mm(std::move(input), std::move(this->matrix));
 
 #if DEBUG
     Matrix::Printer m_printer;
@@ -28,9 +32,11 @@ std::unique_ptr<Matrix::Representation> NeuralNetwork::MatrixMultiplyStep::forwa
 
 std::unique_ptr<Matrix::Representation> NeuralNetwork::AddStep::forward(std::unique_ptr<Matrix::Representation> input) {
 
-    Matrix::Operations::Addition::Std add;
+    Matrix::Operations::Timer add(
+        std::make_unique<Matrix::Operations::Binary::Addition::Std>());
+    // Matrix::Operations::Binary::Addition::Std add;
 
-    auto z = add(this->matrix, input);
+    auto z = add(std::move(this->matrix), std::move(input));
 
 
 #if DEBUG

@@ -60,7 +60,7 @@ namespace NeuralNetwork {
                     
                     this->matrix = matrix_init(std::move(this->matrix));
             }
-            std::unique_ptr<Matrix::Representation> giveOperand() { return std::move(this->matrix); }
+            std::unique_ptr<Matrix::Representation> releaseOperand() { return std::move(this->matrix); }
         protected:
             std::unique_ptr<Matrix::Representation> matrix;
 
