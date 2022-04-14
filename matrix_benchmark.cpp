@@ -11,13 +11,11 @@
 namespace Matrix {
 
 
-    std::unique_ptr<Representation> Operations::Timer::operator()(std::unique_ptr<Matrix::Representation> l, 
-            std::unique_ptr<Matrix::Representation> r) {
-
-                std::cout << "Entered Timer wrapper" << std::endl;
+    std::unique_ptr<Representation> Operations::Timer::operator()(const std::unique_ptr<Matrix::Representation>& l, 
+            const std::unique_ptr<Matrix::Representation>& r) {
 
                 start = std::chrono::steady_clock::now();
-                std::unique_ptr<Matrix::Representation> mc = this->matrix_operation->operator()(std::move(l), std::move(r));
+                std::unique_ptr<Matrix::Representation> mc = this->matrix_operation->operator()(l, r);
                 end   = std::chrono::steady_clock::now();
 
                 

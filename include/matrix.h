@@ -15,10 +15,10 @@ namespace Matrix {
     template <typename T, typename Parameter>
     class NamedType {
     public:
-        explicit NamedType(T const& value) : value_(value) {}
-        explicit NamedType(T&& value) : value_(std::move(value)) {}
-        T& get() { return value_; }
-        T const& get() const {return value_; }
+        constexpr explicit NamedType(T const& value) : value_(value) {}
+        constexpr explicit NamedType(T&& value) : value_(std::move(value)) {}
+        constexpr T& get() { return value_; }
+        constexpr T const& get() const {return value_; }
     private:
         T value_;
     };
@@ -37,17 +37,41 @@ namespace Matrix {
             Representation(const Matrix::Representation& _other) : rows(_other.num_rows()), columns(_other.num_cols()), data(_other.data) {}
             Representation(const Matrix::Representation&& _other) : rows(_other.num_rows()), columns(_other.num_cols()), data(std::move(_other.data)) {}
             
-            bool operator==(const Matrix::Representation& _other);
-            bool operator!=(const Matrix::Representation& _other);
+            bool operator==(const Matrix::Representation _other);
+            bool operator!=(const Matrix::Representation _other);
 
-            u_int64_t num_rows() const { return rows; }
-            u_int64_t num_cols() const { return columns; }
+            constexpr u_int64_t num_rows() const { return rows; }
+            constexpr u_int64_t num_cols() const { return columns; }
             
-            float get(u_int64_t r, u_int64_t c);
-            void put(u_int64_t r, u_int64_t c, float val);
+            // constexpr float get(u_int64_t r, u_int64_t c);
+            // constexpr void put(u_int64_t r, u_int64_t c, float val);
             
-            matrix_iter scanStart() { return this->data.begin(); }
-            matrix_iter scanEnd() { return this->data.end(); }
+            constexpr float get(u_int64_t r, u_int64_t c) {
+
+                uint64_t calculated_index = c + r * columns; 
+
+                if (r <= rows && c <= columns) {
+                    return data.at(calculated_index);
+                }
+                else throw std::range_error("Index not accepted for this Matrix.");
+
+            }
+
+
+            constexpr void put(u_int64_t r, u_int64_t c, float val) {
+
+                uint64_t calculated_index = c + r * columns; 
+
+                if (r <= rows && c <= columns) {
+                    data.at(calculated_index) = val;
+                }
+                else throw std::range_error("Index not accepted for this Matrix.");
+
+            }
+
+
+            constexpr matrix_iter scanStart() { return this->data.begin(); }
+            constexpr matrix_iter scanEnd() { return this->data.end(); }
         private:
             u_int64_t rows;
             u_int64_t columns;

@@ -22,9 +22,8 @@ namespace Matrix {
                     protected:
                         Implementation* Impl() { return static_cast<Implementation*>(this);}
                         std::unique_ptr<Representation> operator()(
-                            std::unique_ptr<Representation> l, 
-                            std::unique_ptr<Representation> r = nullptr) { 
-                                std::cout << "Entered Benchmark Wrapper" << std::endl;
+                            const std::unique_ptr<Representation>& l, 
+                            const std::unique_ptr<Representation>& r = nullptr) { 
                                 return Impl()->operator()(l, r); 
                                 };
                         ~Benchmark() = default;
@@ -40,7 +39,7 @@ namespace Matrix {
                 Decorator for BaseInterface() class Function objects, used to benchmark algorithm performance.
 
             USAGE:
-            
+                    
                 using matrix_t = Matrix::Representation; 
                 std::unique_ptr<matrix_t> ma = std::make_unique<matrix_t>(5000, 5000);
                 std::unique_ptr<matrix_t> mb = std::make_unique<matrix_t>(5000, 5000);
@@ -49,10 +48,12 @@ namespace Matrix {
                 ma = normal_distribution_init(std::move(ma));
                 mb = normal_distribution_init(std::move(mb));
 
-                std::unique_ptr<Matrix::Operations::Multiplication::ParallelDNC> mul_ptr_r       = std::make_unique<Matrix::Operations::Multiplication::ParallelDNC>();
-                Matrix::Timer<Matrix::Operations::Multiplication::ParallelDNC> mul_bm_r(std::move(mul_ptr_r));
-                std::unique_ptr<matrix_t> mf = mul_bm_r(ma, mb);
-            
+                Matrix::Operations::Timer mul_bm_r(
+                        std::make_unique<Matrix::Operations::Binary::Multiplication::ParallelDNC>());
+                std::unique_ptr<matrix_t> mf = mul_bm_r(std::move(ma), std::move(mb));
+                
+
+                std::cout << "Performed in " << mul_bm_r.get_computation_duration_ms() << " ms." << std::endl;
             */
             class Timer : public Benchmark<Timer> {
 
@@ -63,8 +64,8 @@ namespace Matrix {
                         Benchmark<Timer>(std::move(_m)) {} 
                     
                     std::unique_ptr<Representation> operator()(
-                            std::unique_ptr<Representation> l,
-                            std::unique_ptr<Representation> r = nullptr);
+                            const std::unique_ptr<Representation>& l,
+                            const std::unique_ptr<Representation>& r = nullptr);
 
                 int get_computation_duration_ms() { 
                     return std::chrono::duration_cast<std::chrono::duration<int, std::micro>>(end - start).count(); }
@@ -85,8 +86,8 @@ namespace Matrix {
             //         ParallelMeasurer(std::unique_ptr<Operations::BaseInterface> _m) : 
             //             Benchmark<ParallelMeasurer>(std::move(_m)) {}
             //             std::unique_ptr<Representation> operator()(
-            //                 std::unique_ptr<Representation> l, 
-            //                 std::unique_ptr<Representation> r); 
+            //                 const std::unique_ptr<Representation>& l, 
+            //                 const std::unique_ptr<Representation>& r); 
 
             // };
         // #endif

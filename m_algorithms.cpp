@@ -13,7 +13,7 @@ namespace Matrix {
 
    
             std::unique_ptr<Matrix::Representation> ReLU::operator()(
-                        std::unique_ptr<Matrix::Representation> m){
+                        const std::unique_ptr<Matrix::Representation>& m){
 
                 std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(
                             Matrix::Rows(m->num_rows()), 
@@ -33,8 +33,8 @@ namespace Matrix {
         namespace Binary {
 
 
-            std::string debug_message(std::unique_ptr<Matrix::Representation>l, 
-                    std::unique_ptr<Matrix::Representation>r) {
+            std::string debug_message(const std::unique_ptr<Matrix::Representation>& l, 
+                    const std::unique_ptr<Matrix::Representation>& r) {
 
                 std::string error_msg = "Matrix A Columns not equal to Matrix B Rows: [" + 
                     std::to_string(l->num_rows()) + "," + 
@@ -47,8 +47,8 @@ namespace Matrix {
                 }
 
 
-            std::string debug_message_2(std::unique_ptr<Matrix::Representation>l, 
-                    std::unique_ptr<Matrix::Representation>r) {
+            std::string debug_message_2(const std::unique_ptr<Matrix::Representation>& l, 
+                    const std::unique_ptr<Matrix::Representation>& r) {
                 
                 std::string error_msg = "Matrix A size not equal to Matrix B: [" + 
                     std::to_string(l->num_rows()) + "," + 
@@ -64,11 +64,11 @@ namespace Matrix {
             namespace Addition {
 
                 std::unique_ptr<Matrix::Representation> Std::operator()(
-                        std::unique_ptr<Matrix::Representation> l, 
-                        std::unique_ptr<Matrix::Representation> r) {
+                        const std::unique_ptr<Matrix::Representation>& l, 
+                        const std::unique_ptr<Matrix::Representation>& r) {
 
                     if ((l->num_rows() != r->num_rows()) && (l->num_cols() != r->num_cols())) {
-                        throw std::length_error(debug_message_2(std::move(l), std::move(r)));
+                        throw std::length_error(debug_message_2(l, r));
                     }
                         
                     auto output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
@@ -84,11 +84,11 @@ namespace Matrix {
 
 
                 std::unique_ptr<Matrix::Representation> Naive::operator()(
-                        std::unique_ptr<Matrix::Representation> l, 
-                        std::unique_ptr<Matrix::Representation> r) {
+                        const std::unique_ptr<Matrix::Representation>& l, 
+                        const std::unique_ptr<Matrix::Representation>& r) {
 
                     if (l->num_rows() != r->num_rows() && l->num_cols() != r->num_cols()) {
-                        throw std::length_error(debug_message_2(std::move(l), std::move(r)));
+                        throw std::length_error(debug_message_2(l, r));
                     }
                     if (l->num_rows() != 1 && l->num_cols() != 1) {
                         throw std::length_error("Operands are not Vectors.");
@@ -123,8 +123,8 @@ namespace Matrix {
             namespace HadamardProduct {
 
                 std::unique_ptr<Matrix::Representation> Std::operator()(
-                        std::unique_ptr<Matrix::Representation> l, 
-                        std::unique_ptr<Matrix::Representation> r) {
+                        const std::unique_ptr<Matrix::Representation>& l, 
+                        const std::unique_ptr<Matrix::Representation>& r) {
 
                         auto output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
 
@@ -136,8 +136,8 @@ namespace Matrix {
 
 
                 std::unique_ptr<Matrix::Representation> Naive::operator()(
-                        std::unique_ptr<Matrix::Representation> l, 
-                        std::unique_ptr<Matrix::Representation> r) {
+                        const std::unique_ptr<Matrix::Representation>& l, 
+                        const std::unique_ptr<Matrix::Representation>& r) {
 
                     if ((l->num_rows() != r->num_rows()) && (l->num_cols() != r->num_cols())) {
                         throw std::length_error("Matrix A not same size as Matrix B.");
@@ -168,11 +168,11 @@ namespace Matrix {
             namespace Multiplication {
 
                 std::unique_ptr<Matrix::Representation> Naive::operator()(
-                        std::unique_ptr<Matrix::Representation> l, 
-                        std::unique_ptr<Matrix::Representation> r) {
+                        const std::unique_ptr<Matrix::Representation>& l, 
+                        const std::unique_ptr<Matrix::Representation>& r) {
 
                     if (l->num_cols() != r->num_rows()) {
-                        throw std::length_error(debug_message(std::move(l), std::move(r)));
+                        throw std::length_error(debug_message(l, r));
 
                     }
 
@@ -240,12 +240,12 @@ namespace Matrix {
 
 
                 std::unique_ptr<Matrix::Representation> ParallelDNC::operator()(
-                        std::unique_ptr<Matrix::Representation> l, 
-                        std::unique_ptr<Matrix::Representation> r) {
+                        const std::unique_ptr<Matrix::Representation>& l, 
+                        const std::unique_ptr<Matrix::Representation>& r) {
 
                     if (l->num_cols() != r->num_rows()) {
                         
-                        throw std::length_error(debug_message(std::move(l), std::move(r)));
+                        throw std::length_error(debug_message(l, r));
                     }
 
                     std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
@@ -257,11 +257,11 @@ namespace Matrix {
         
         
                 std::unique_ptr<Matrix::Representation> Square::operator()(
-                        std::unique_ptr<Matrix::Representation> l, 
-                        std::unique_ptr<Matrix::Representation> r) {
+                        const std::unique_ptr<Matrix::Representation>& l, 
+                        const std::unique_ptr<Matrix::Representation>& r) {
 
                     if (l->num_cols() != r->num_rows()) {
-                        throw std::length_error(debug_message(std::move(l), std::move(r)));
+                        throw std::length_error(debug_message(l, r));
 
                     }
 
