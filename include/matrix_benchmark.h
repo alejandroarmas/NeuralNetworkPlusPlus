@@ -19,6 +19,8 @@ namespace Matrix {
 
                     public:
                         Benchmark(std::unique_ptr<Operations::BaseInterface> _m) : matrix_operation(std::move(_m)) {}
+                        Code get_operation_code() { return matrix_operation->get_operation_code(); };
+
                     protected:
                         Implementation* Impl() { return static_cast<Implementation*>(this);}
                         std::unique_ptr<Representation> operator()(
@@ -28,6 +30,7 @@ namespace Matrix {
                                 };
                         ~Benchmark() = default;
                         std::unique_ptr<Operations::BaseInterface> matrix_operation;
+                        
 
         };
 

@@ -14,6 +14,11 @@ namespace Matrix {
     namespace Operations {
 
 
+        enum struct Code {
+            NOP, MULTIPLY, PLUS, ReLU, OUTER_PRODUCT, HADAMARD,
+        };
+
+
         class BaseInterface {
 
             public:
@@ -21,7 +26,7 @@ namespace Matrix {
                 virtual std::unique_ptr<Matrix::Representation> operator()(
                     const std::unique_ptr<Matrix::Representation>& l, 
                     const std::unique_ptr<Matrix::Representation>& r = nullptr) = 0;
-                
+                virtual Code get_operation_code() = 0;
 
         };
 
@@ -33,8 +38,13 @@ namespace Matrix {
 
                 std::unique_ptr<Matrix::Representation> operator()(
                     const std::unique_ptr<Matrix::Representation>& l, 
-                    const std::unique_ptr<Matrix::Representation>& r = nullptr) {
-                            
+                    const std::unique_ptr<Matrix::Representation>& r = nullptr) override {
+
+                    if (!l) {
+                        throw std::invalid_argument("Left operand not referencing a matrix.");
+                    }
+
+
                     if (r != nullptr) {
                         throw std::invalid_argument("Unary Operation needs one operand.");
                     }
@@ -42,6 +52,8 @@ namespace Matrix {
                     };
                     
                 ~UnaryAdapter() = default;
+                Code get_operation_code() override { return Impl().get_operation_code(); };
+
                 private:
                     Implementation& Impl() { return *static_cast<Implementation*>(this); }
                     friend Implementation;
@@ -55,6 +67,7 @@ namespace Matrix {
                 public:
                     std::unique_ptr<Matrix::Representation> operator()(
                         const std::unique_ptr<Matrix::Representation>& m);
+                Code get_operation_code() { return Code::ReLU; };
 
             };
 
@@ -72,8 +85,19 @@ namespace Matrix {
                     BaseOp() = default;
                     virtual std::unique_ptr<Matrix::Representation> operator()(
                         const std::unique_ptr<Matrix::Representation>& l, 
-                        const std::unique_ptr<Matrix::Representation>& r) { return Impl().operator()(l, r); };
+                        const std::unique_ptr<Matrix::Representation>& r) override { 
+                            
+                        if (!l) {
+                            throw std::invalid_argument("Left operand not referencing a matrix.");
+                        }
+                        if (!r) {
+                            throw std::invalid_argument("Right operand not referencing a matrix.");
+                        }
+                        
+                            return Impl().operator()(l, r);
+                        };
                     virtual ~BaseOp() = default;
+                    Code get_operation_code() override { return Impl().get_operation_code(); };
                 private:
                     Implementation& Impl() { return *static_cast<Implementation*>(this); }
                     friend Implementation;
@@ -98,6 +122,7 @@ namespace Matrix {
                         std::unique_ptr<Matrix::Representation> operator()(
                             const std::unique_ptr<Matrix::Representation>& l, 
                             const std::unique_ptr<Matrix::Representation>& r);
+                Code get_operation_code() { return Code::PLUS; };
 
                 };
 
@@ -112,6 +137,7 @@ namespace Matrix {
                         std::unique_ptr<Matrix::Representation> operator()(
                             const std::unique_ptr<Matrix::Representation>& l, 
                             const std::unique_ptr<Matrix::Representation>& r);
+                        Code get_operation_code() { return Code::OUTER_PRODUCT; };
 
                 };
 
@@ -133,6 +159,7 @@ namespace Matrix {
                         std::unique_ptr<Matrix::Representation> operator()(
                             const std::unique_ptr<Matrix::Representation>& l, 
                             const std::unique_ptr<Matrix::Representation>& r);
+                        Code get_operation_code() { return Code::HADAMARD; };
 
                 };
 
@@ -143,6 +170,7 @@ namespace Matrix {
                         std::unique_ptr<Matrix::Representation> operator()(
                             const std::unique_ptr<Matrix::Representation>& l, 
                             const std::unique_ptr<Matrix::Representation>& r);
+                        Code get_operation_code() { return Code::HADAMARD; };
 
                 };
 
@@ -171,16 +199,19 @@ namespace Matrix {
                         std::unique_ptr<Matrix::Representation> operator()(
                             const std::unique_ptr<Matrix::Representation>& l, 
                             const std::unique_ptr<Matrix::Representation>& r);
+                        Code get_operation_code() { return Code::MULTIPLY; };
+
 
                 };
 
 
                 class Square : public BaseOp<Square> {
 
-                                public:
-                                    std::unique_ptr<Matrix::Representation> operator()(
-                                        const std::unique_ptr<Matrix::Representation>& l, 
-                                        const std::unique_ptr<Matrix::Representation>& r) ;
+                        public:
+                            std::unique_ptr<Matrix::Representation> operator()(
+                                const std::unique_ptr<Matrix::Representation>& l, 
+                                const std::unique_ptr<Matrix::Representation>& r) ;
+                        Code get_operation_code() { return Code::MULTIPLY; };
 
                 };
 
@@ -191,6 +222,7 @@ namespace Matrix {
                                     std::unique_ptr<Matrix::Representation> operator()(
                                         const std::unique_ptr<Matrix::Representation>& l, 
                                         const std::unique_ptr<Matrix::Representation>& r);
+                        Code get_operation_code() { return Code::MULTIPLY; };
 
                 };
 
