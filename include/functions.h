@@ -1,5 +1,5 @@
-#ifndef ACTIVATION_FUNCTION_H
-#define ACTIVATION_FUNCTION_H
+#ifndef PRIMITIVE_FUNCTION_H
+#define PRIMITIVE_FUNCTION_H
 
 #include <cstdint>
 
@@ -66,4 +66,4 @@ namespace Functions {
 }
 
 
-#endif // ACTIVATION_FUNCTION_H
+#endif // PRIMITIVE_FUNCTION_H

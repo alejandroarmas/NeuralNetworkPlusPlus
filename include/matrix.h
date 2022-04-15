@@ -1,5 +1,5 @@
-#ifndef MATRIX_MULTIPLY_H
-#define MATRIX_MULTIPLY_H
+#ifndef MATRIX_REPRESENTATION_H
+#define MATRIX_REPRESENTATION_H
 
 #include <vector>
 #include <cstdint>
