@@ -1,10 +1,11 @@
-#ifndef TENSOR_H
-#define TENSOR_H
+#ifndef TENSOR_DEFINITION_H
+#define TENSOR_DEFINITION_H
 
 
 #include "matrix.h"
 #include "m_algorithms.h"
 #include "m_algorithms_register.h"
+#include "matrix_benchmark.h"
 
 #include <memory>
 
@@ -23,7 +24,7 @@ namespace NeuralNetwork {
             using IsLeaf      = Matrix::NamedType<bool, struct LeafParameter>;
 
 
-            class Tensor : std::enable_shared_from_this<Tensor> {
+            class Tensor {
 
                 using matrix_t = std::unique_ptr<Matrix::Representation>;
 
@@ -34,11 +35,11 @@ namespace NeuralNetwork {
                     Tensor(std::unique_ptr<Matrix::Representation> _m, 
                         IsTrackable _t = IsTrackable(true), IsLeaf _f = IsLeaf(true));
 
-                    bool is_tensor_leaf() { return is_leaf; }
-                    bool is_requires_grad() { return requires_grad; }
-                    matrix_t release_matrix() { return std::move(matrix); }
-                    matrix_t release_grad() { return std::move(grad); }
-                    void register_operation(const std::shared_ptr<RegisteredOperation> _node) { graph_node = _node;}
+                    bool     is_tensor_leaf()   { return is_leaf; }
+                    bool     is_requires_grad() { return requires_grad; }
+                    matrix_t release_matrix()   { return std::move(matrix); }
+                    matrix_t release_grad()     { return std::move(grad); }
+                    void     register_operation(const std::shared_ptr<RegisteredOperation> _node) { graph_node = _node;}
                     std::shared_ptr<RegisteredOperation> get_operation() { return graph_node; }
 
                 protected:
@@ -55,14 +56,15 @@ namespace NeuralNetwork {
 
             class TensorOp {
 
-                TensorOp(std::unique_ptr<Matrix::Operations::BaseInterface> _op) : 
-                    op_type(std::move(_op)) {}
                 public:
+                    TensorOp(std::unique_ptr<Matrix::Operations::Timer> _op) : 
+                        op_type(std::move(_op)) {}
+
                     std::shared_ptr<Tensor> operator()(
-                        const std::shared_ptr<Tensor>& l, 
-                        const std::shared_ptr<Tensor>& r);
+                        const std::shared_ptr<Tensor> l, 
+                        const std::shared_ptr<Tensor> r = nullptr);
                 private:
-                    std::unique_ptr<Matrix::Operations::BaseInterface> op_type; 
+                    std::unique_ptr<Matrix::Operations::Timer> op_type; 
 
 
             };
@@ -74,4 +76,4 @@ namespace NeuralNetwork {
 }
 
 
-#endif // TENSOR_H
+#endif // TENSOR_DEFINITION_H

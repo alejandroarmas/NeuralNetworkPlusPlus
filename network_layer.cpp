@@ -1,100 +1,106 @@
 #include <memory>
-#include <algorithm>
+#include <algorithm>  // std::for_each
 
-#include "matrix.h"
+#include "tensor.h"
 #include "network_layer.h" 
 #include "m_algorithms.h"
-#include "matrix_printer.h"
+// #include "matrix_printer.h"
 #include "matrix_benchmark.h"
 #include "config.h"
 
 
-std::unique_ptr<Matrix::Representation> NeuralNetwork::MatrixMultiplyStep::forward(std::unique_ptr<Matrix::Representation> input) {
-
-    Matrix::Operations::Timer mm(
-        std::make_unique<Matrix::Operations::Binary::Multiplication::ParallelDNC>());
-
-    // Matrix::Operations::Binary::Multiplication::ParallelDNC mm;
+namespace NeuralNetwork {
 
 
-    auto out = mm(std::move(input), std::move(this->matrix));
+    std::shared_ptr<Tensor> MatrixMultiplyStep::forward(std::shared_ptr<Tensor> input) {
 
-#if DEBUG
-    Matrix::Printer m_printer;
-    out = m_printer(std::move(out));
-#endif
+        TensorOp mm(std::make_unique<Matrix::Operations::Timer>(
+            std::make_unique<Matrix::Operations::Binary::Multiplication::ParallelDNC>()));
 
 
-    return out;
-}
+        auto out = mm(input, this->matrix);
+
+    // #if DEBUG
+    //     Matrix::Printer m_printer;
+    //     out = m_printer(std::move(out));
+    // #endif
 
 
-
-std::unique_ptr<Matrix::Representation> NeuralNetwork::AddStep::forward(std::unique_ptr<Matrix::Representation> input) {
-
-    Matrix::Operations::Timer add(
-        std::make_unique<Matrix::Operations::Binary::Addition::Std>());
-    // Matrix::Operations::Binary::Addition::Std add;
-
-    auto z = add(std::move(this->matrix), std::move(input));
-
-
-#if DEBUG
-    Matrix::Printer m_printer;
-    z = m_printer(std::move(z));
-#endif
-
-    return z;
-}
-
-
-std::unique_ptr<Matrix::Representation> NeuralNetwork::Layer::forward(std::unique_ptr<Matrix::Representation> input) {
-
-    if (input == nullptr) {
-        throw std::invalid_argument("Matrix has no data (pointing to null).");
+        return out;
     }
 
 
-    auto out = this->weights->forward(std::move(input));
-    
-    auto z = this->bias->forward(std::move(out));
+
+    std::shared_ptr<Tensor> AddStep::forward(std::shared_ptr<Tensor> input) {
 
 
-    return z;
-}
+
+        TensorOp add(std::make_unique<Matrix::Operations::Timer>(
+            std::make_unique<Matrix::Operations::Binary::Addition::Std>()));
 
 
-void NeuralNetwork::Layer::add(std::unique_ptr<StepInterface> matrix) {
 
-    if (matrix == nullptr) {
-        throw std::invalid_argument("Matrix has no data (pointing to null).");
+        auto z = add(this->matrix, input);
+
+
+    // #if DEBUG
+    //     Matrix::Printer m_printer;
+    //     z = m_printer(std::move(z));
+    // #endif
+
+        return z;
     }
 
-    if (this->weights == nullptr) {
-        this->weights = std::move(matrix);
+
+    std::shared_ptr<Tensor> Layer::forward(std::shared_ptr<Tensor> input) {
+
+        if (input == nullptr) {
+            throw std::invalid_argument("Matrix has no data (pointing to null).");
+        }
+
+
+        auto out = this->weights->forward(input);
+        
+        auto z = this->bias->forward(out);
+
+
+        return z;
     }
-    else if (this->bias == nullptr) {
-        this->bias    = std::move(matrix);
+
+
+    void Layer::add(std::unique_ptr<StepInterface> matrix) {
+
+        if (matrix == nullptr) {
+            throw std::invalid_argument("Matrix has no data (pointing to null).");
+        }
+
+        if (this->weights == nullptr) {
+            this->weights = std::move(matrix);
+        }
+        else if (this->bias == nullptr) {
+            this->bias    = std::move(matrix);
+        }
+
     }
 
-}
+
+    std::shared_ptr<Tensor> Sequential::forward(std::shared_ptr<Tensor> input) {
+
+        std::shared_ptr<Tensor> current_value = input;
+
+        std::for_each(this->_modules.begin(), this->_modules.end(), 
+            [&current_value](std::pair<const unsigned int, std::unique_ptr<StepInterface>>& _layer){
+
+                current_value = _layer.second->forward(current_value);
+            });
 
 
-std::unique_ptr<Matrix::Representation> NeuralNetwork::Sequential::forward(std::unique_ptr<Matrix::Representation> input) {
-
-    std::unique_ptr<Matrix::Representation> current_value = std::move(input);
-
-    std::for_each(this->_modules.begin(), this->_modules.end(), 
-        [&current_value](std::pair<const unsigned int, std::unique_ptr<StepInterface>>& _layer){
-
-            current_value = _layer.second->forward(std::move(current_value));
-        });
+        return current_value;
+    }
 
 
-    return current_value;
-}
+    void Sequential::add(std::unique_ptr<StepInterface> layer) {
+        this->_modules.emplace(this->last_key++, std::move(layer));
+    }
 
-
-void NeuralNetwork::Sequential::add(std::unique_ptr<StepInterface> layer) {
-    this->_modules.emplace(this->last_key++, std::move(layer));
 }

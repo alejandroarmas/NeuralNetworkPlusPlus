@@ -16,7 +16,6 @@ namespace NeuralNetwork {
         namespace Graph {
 
 
-
             Tensor::Tensor(Matrix::Rows _l, Matrix::Columns _w, 
                 IsTrackable _t, IsLeaf _f): matrix(std::make_unique<Matrix::Representation>(_l, _w)), 
                 grad(nullptr), graph_node(nullptr), is_leaf(_f.get()), requires_grad(_t.get()) {
@@ -42,15 +41,17 @@ namespace NeuralNetwork {
 
             void Tensor::register_leaf_op(void) {
                         
-                auto op = std::make_shared<RegisteredOperation>(
-                    Matrix::Operations::Code::NOP, shared_from_this());
+                auto op = RegisteredOperation::create(
+                    Matrix::Operations::Code::NOP, 
+                    std::shared_ptr<Tensor>(this)
+                    );
                 register_operation(op);
             } 
 
 
             std::shared_ptr<Tensor> TensorOp::operator()(
-                const std::shared_ptr<Tensor>& l, 
-                const std::shared_ptr<Tensor>& r = nullptr) {
+                const std::shared_ptr<Tensor> l, 
+                const std::shared_ptr<Tensor> r) {
 
                     bool isBinaryOp = r != nullptr; 
 
@@ -70,10 +71,11 @@ namespace NeuralNetwork {
                         out_tensor = std::make_shared<Tensor>(
                                 std::move(out_matrix), IsTrackable(true), IsLeaf(false));
                         
-                        out_op = std::make_shared<
-                            RegisteredOperation>(op_code, 
-                            out_tensor, l->get_operation(),
-                                r->get_operation());
+                        out_op =
+                            RegisteredOperation::create(op_code, 
+                                    out_tensor, l->get_operation(),
+                                    r->get_operation()
+                            );
 
                     }
                     else {
@@ -84,9 +86,10 @@ namespace NeuralNetwork {
                         out_tensor = std::make_shared<Tensor>
                             (std::move(out_matrix), IsTrackable(true), IsLeaf(false));
                         
-                        out_op = std::make_shared<
-                            RegisteredOperation>(op_code, out_tensor, 
-                        l->get_operation());
+                        out_op = 
+                            RegisteredOperation::create(op_code, out_tensor, 
+                                l->get_operation()
+                            );
 
                     }
 
@@ -96,6 +99,7 @@ namespace NeuralNetwork {
                     return out_tensor;
                 }
 
+                
 
         }
 

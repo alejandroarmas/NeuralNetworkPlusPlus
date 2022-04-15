@@ -1,15 +1,11 @@
-#ifndef ACTIVATION_FUNCTIONS
-#define ACTIVATION_FUNCTIONS
+#ifndef ACTIVATION_FUNCTIONS_H
+#define ACTIVATION_FUNCTIONS_H
 
-#include <cstdint>
 #include <memory>
-#include <functional>
 
 #include "network_layer.h"
-#include "functions.h"
-#include "matrix.h"
+#include "tensor.h"
 
-#include <map>
 
 #define FLAT 1
     
@@ -21,7 +17,7 @@ namespace NeuralNetwork {
         class ReLU: public ComputationalStep<ReLU> {
 
             public:     
-                std::unique_ptr<Matrix::Representation> forward(std::unique_ptr<Matrix::Representation> input);
+                std::shared_ptr<Computation::Graph::Tensor> forward(std::shared_ptr<Computation::Graph::Tensor> input);
         };
 
     }
@@ -30,4 +26,4 @@ namespace NeuralNetwork {
 
 
 
-#endif // ACTIVATION_FUNCTIONS
+#endif // ACTIVATION_FUNCTIONS_H
