@@ -17,7 +17,7 @@ namespace NeuralNetwork {
         class ReLU: public ComputationalStep<ReLU> {
 
             public:     
-                std::shared_ptr<Computation::Graph::Tensor> forward(std::shared_ptr<Computation::Graph::Tensor> input);
+                std::shared_ptr<Computation::Graph::Tensor> doForward(std::shared_ptr<Computation::Graph::Tensor> input);
         };
 
     }

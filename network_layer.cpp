@@ -12,7 +12,7 @@
 namespace NeuralNetwork {
 
 
-    std::shared_ptr<Tensor> MatrixMultiplyStep::forward(std::shared_ptr<Tensor> input) {
+    std::shared_ptr<Tensor> MatrixMultiplyStep::_doForward(std::shared_ptr<Tensor> input) {
 
         TensorOp mm(std::make_unique<Matrix::Operations::Timer>(
             std::make_unique<Matrix::Operations::Binary::Multiplication::ParallelDNC>()));
@@ -31,7 +31,7 @@ namespace NeuralNetwork {
 
 
 
-    std::shared_ptr<Tensor> AddStep::forward(std::shared_ptr<Tensor> input) {
+    std::shared_ptr<Tensor> AddStep::_doForward(std::shared_ptr<Tensor> input) {
 
 
 
@@ -52,7 +52,7 @@ namespace NeuralNetwork {
     }
 
 
-    std::shared_ptr<Tensor> Layer::forward(std::shared_ptr<Tensor> input) {
+    std::shared_ptr<Tensor> Layer::doForward(std::shared_ptr<Tensor> input) {
 
         if (input == nullptr) {
             throw std::invalid_argument("Matrix has no data (pointing to null).");
@@ -84,7 +84,7 @@ namespace NeuralNetwork {
     }
 
 
-    std::shared_ptr<Tensor> Sequential::forward(std::shared_ptr<Tensor> input) {
+    std::shared_ptr<Tensor> Sequential::doForward(std::shared_ptr<Tensor> input) {
 
         std::shared_ptr<Tensor> current_value = input;
 

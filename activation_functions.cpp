@@ -9,7 +9,7 @@
 
 namespace NeuralNetwork {
 
-    std::shared_ptr<Computation::Graph::Tensor> NeuralNetwork::ActivationFunctions::ReLU::forward(std::shared_ptr<Computation::Graph::Tensor> input) {
+    std::shared_ptr<Computation::Graph::Tensor> NeuralNetwork::ActivationFunctions::ReLU::doForward(std::shared_ptr<Computation::Graph::Tensor> input) {
 
         if (input == nullptr) {
             throw std::invalid_argument("Matrix has no data (pointing to null).");
