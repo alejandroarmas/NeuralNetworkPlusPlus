@@ -8,6 +8,7 @@
 #include <functional>
 #include <map>
 
+#include <concepts>
 #include <iostream>
 
 #define FLAT 1
@@ -15,9 +16,26 @@
 
 namespace NeuralNetwork {
 
-    // using T = std::shared_ptr<Tensor>;
+
 
     using namespace NeuralNetwork::Computation::Graph;
+
+    // template <typename ComputationalStepImpl>
+    // concept StepLike = requires(ComputationalStepImpl step) {
+
+    //     step.forward(std::shared_ptr<Tensor>{});
+    // };
+
+
+    // template <StepLike ComputationalStepImpl>
+    // struct StepInterfaceConcept :  ComputationalStepImpl, tl {};
+
+    // using AddStep      = StepInterfaceConcept<ComputationalStep<BinaryOperationStep<AddStep>>>;
+    // using MultiplyStep = StepInterfaceConcept<ComputationalStep<BinaryOperationStep<MatrixMultiplyStep>>>;
+    // using Layer        = StepInterfaceConcept<ComputationalStep<Layer>>;
+    // using Sequential   = StepInterfaceConcept<ComputationalStep<Sequential>>;
+
+
 
     class StepInterface {
 
@@ -25,6 +43,8 @@ namespace NeuralNetwork {
             virtual ~StepInterface() = default;
             virtual std::shared_ptr<Tensor> forward(std::shared_ptr<Tensor> input) = 0;
             };
+
+
 
 
     template <class Implementation>
@@ -41,9 +61,7 @@ namespace NeuralNetwork {
             ~ComputationalStep() {}
         private:
             Implementation& Impl() { return *static_cast<Implementation*>(this); }
-            // Implementation const& Impl() { return *static_cast<Implementation*>(this); }
             ComputationalStep() = default;
-            // ComputationalStep(const ComputationalStep &) = default;
             friend Implementation;
     };
 
@@ -102,14 +120,21 @@ namespace NeuralNetwork {
     */
 
 
+    template <class Implementation>
     class ComposedStep {
 
         public:
-            virtual void add(std::unique_ptr<StepInterface> layer) = 0;
+            void add(std::unique_ptr<StepInterface> layer) {
+                Impl()._add(std::move(layer));
+            }
+        private:
+            friend Implementation;
+            Implementation& Impl() { return *static_cast<Implementation*>(this); }
+            ComposedStep() = default;
     };
 
 
-    class Layer: public ComputationalStep<Layer>, public ComposedStep {
+    class Layer: public ComputationalStep<Layer>, public ComposedStep<Layer> {
 
         public:
             Layer(std::unique_ptr<StepInterface> _w, 
@@ -117,7 +142,7 @@ namespace NeuralNetwork {
                 weights(std::move(_w)), bias(std::move(_b)) {}
                 
             std::shared_ptr<Tensor> doForward(std::shared_ptr<Tensor> input);
-            void add(std::unique_ptr<StepInterface> layer) override;
+            void _add(std::unique_ptr<StepInterface> layer);
             
         private:
             std::unique_ptr<StepInterface> weights;
@@ -156,12 +181,12 @@ namespace NeuralNetwork {
         auto out = model.forward(ma);
 
     */
-    class Sequential: public ComputationalStep<Sequential>, public ComposedStep {
+    class Sequential: public ComputationalStep<Sequential>, public ComposedStep<Sequential> {
         public:
             Sequential() : last_key(0) {}
             ~Sequential() = default;
             std::shared_ptr<Tensor> doForward(std::shared_ptr<Tensor> input);
-            void add(std::unique_ptr<StepInterface> layer) override;
+            void _add(std::unique_ptr<StepInterface> layer);
         private:
             std::map<const unsigned int, std::unique_ptr<StepInterface>> _modules;
             unsigned int last_key;

@@ -68,7 +68,7 @@ namespace NeuralNetwork {
     }
 
 
-    void Layer::add(std::unique_ptr<StepInterface> matrix) {
+    void Layer::_add(std::unique_ptr<StepInterface> matrix) {
 
         if (matrix == nullptr) {
             throw std::invalid_argument("Matrix has no data (pointing to null).");
@@ -99,7 +99,7 @@ namespace NeuralNetwork {
     }
 
 
-    void Sequential::add(std::unique_ptr<StepInterface> layer) {
+    void Sequential::_add(std::unique_ptr<StepInterface> layer) {
         this->_modules.emplace(this->last_key++, std::move(layer));
     }
 
