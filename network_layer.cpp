@@ -7,15 +7,18 @@
 // #include "matrix_printer.h"
 #include "matrix_benchmark.h"
 #include "config.h"
-
+#include <chrono>
 
 namespace NeuralNetwork {
 
 
+
     std::shared_ptr<Tensor> MatrixMultiplyStep::_doForward(std::shared_ptr<Tensor> input) {
 
-        TensorOp mm(std::make_unique<Matrix::Operations::Timer>(
-            std::make_unique<Matrix::Operations::Binary::Multiplication::ParallelDNC>()));
+        TensorOp<
+            Matrix::Operations::Binary::Multiplication::ParallelDNC>
+             mm(Matrix::Operations::Binary::Multiplication::ParallelDNC{});
+
 
 
         auto out = mm(input, this->matrix);
@@ -35,8 +38,7 @@ namespace NeuralNetwork {
 
 
 
-        TensorOp add(std::make_unique<Matrix::Operations::Timer>(
-            std::make_unique<Matrix::Operations::Binary::Addition::Std>()));
+        TensorOp<Matrix::Operations::Binary::Addition::Std> add(Matrix::Operations::Binary::Addition::Std{});
 
 
 

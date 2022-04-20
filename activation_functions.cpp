@@ -17,8 +17,7 @@ namespace NeuralNetwork {
         
         
         
-        Computation::Graph::TensorOp relu(std::make_unique<Matrix::Operations::Timer>(
-            std::make_unique<Matrix::Operations::Unary::ReLU>()));
+        Computation::Graph::TensorOp<Matrix::Operations::Unary::ReLU> relu(Matrix::Operations::Unary::ReLU{});
 
 
 

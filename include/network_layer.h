@@ -8,11 +8,15 @@
 #include <functional>
 #include <map>
 
-#include <concepts>
 #include <iostream>
 
 #define FLAT 1
     
+template<typename T>
+const char* getClassName(T) {
+    return typeid(T).name();
+}
+
 
 namespace NeuralNetwork {
 
@@ -52,12 +56,36 @@ namespace NeuralNetwork {
 
         public:
             std::shared_ptr<Tensor> forward(std::shared_ptr<Tensor> input) override { 
+ 
 
-                    // TODO: print, or error checking.
-                    std::cout << "Entered ComputationalStep()" << std::endl;
+                // TODO: print, or error checking.
 
-                    return Impl().doForward(input);
+                auto out = Impl().doForward(input); 
+
+
+                if (out->stats.has_value()) {
+
+                    auto m2 = out->stats->get_matrix_end();
+                    auto m1 = out->stats->get_matrix_start();
+
+                    auto g2 = out->stats->get_graph_end();
+                    auto g1 = out->stats->get_graph_start();
+
+                    auto op_str = out->stats->get_operation_string();
+
+
+                    auto time_performing_operation = std::chrono::duration_cast<std::chrono::duration<int, std::micro>>(m2 - m1).count(); 
+                    auto time_making_graph = std::chrono::duration_cast<std::chrono::duration<int, std::micro>>(g2 - g1).count() - time_performing_operation;
+                    
+                    std::cout << op_str << " performance: " << std::endl;
+                    std::cout << "\t Time making graph (ms): " << time_making_graph << std::endl;
+                    std::cout << "\t Time performing operation (ms): " << time_performing_operation << std::endl;
+
+                }
+
+                return out;
             }
+
             ~ComputationalStep() {}
         private:
             Implementation& Impl() { return *static_cast<Implementation*>(this); }
@@ -190,8 +218,6 @@ namespace NeuralNetwork {
         private:
             std::map<const unsigned int, std::unique_ptr<StepInterface>> _modules;
             unsigned int last_key;
-
-
 
     };
 
