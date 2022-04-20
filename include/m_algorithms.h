@@ -23,42 +23,23 @@ namespace Matrix {
         };
        
 
-        class BaseInterface {
-
-            public:
-                virtual ~BaseInterface() = default;
-                virtual std::unique_ptr<Matrix::Representation> operator()(
-                    const std::unique_ptr<Matrix::Representation>& l, 
-                    const std::unique_ptr<Matrix::Representation>& r = nullptr) = 0;
-                virtual Code get_operation_code() = 0;
-
-        };
-
+      
         namespace Unary {
 
 
             template <class Implementation>
-            class UnaryAdapter : public BaseInterface {
+            class UnaryAdapter {
 
                 public:
                     std::unique_ptr<Matrix::Representation> operator()(
-                        const std::unique_ptr<Matrix::Representation>& l, 
-                        const std::unique_ptr<Matrix::Representation>& r = nullptr) override {
-
+                        const std::unique_ptr<Matrix::Representation>& l) {
                         if (!l) {
                             throw std::invalid_argument("Left operand not referencing a matrix.");
-                        }
-
-
-                        if (r != nullptr) {
-                            throw std::invalid_argument("Unary Operation needs one operand.");
                         }
                         return Impl().operate(l); 
                         };
                     
                 ~UnaryAdapter() = default;
-                Code get_operation_code() override { return Impl().get_code(); };
-
                 private:
                     Implementation& Impl() { return *static_cast<Implementation*>(this); }
                     friend Implementation;
@@ -74,8 +55,6 @@ namespace Matrix {
                 public:
                     std::unique_ptr<Matrix::Representation> operate(
                         const std::unique_ptr<Matrix::Representation>& m);
-                Code get_code() { return Code::ReLU; };
-
             };
 
             static_assert(MatrixOperatable<ReLU>);
@@ -87,13 +66,13 @@ namespace Matrix {
 
 
             template <class Implementation>
-            class BaseOp : public BaseInterface {
+            class BaseOp {
 
                 public:
                     BaseOp() = default;
                     virtual std::unique_ptr<Matrix::Representation> operator()(
                         const std::unique_ptr<Matrix::Representation>& l, 
-                        const std::unique_ptr<Matrix::Representation>& r) override { 
+                        const std::unique_ptr<Matrix::Representation>& r) { 
                             
                         if (!l) {
                             throw std::invalid_argument("Left operand not referencing a matrix.");
@@ -104,9 +83,7 @@ namespace Matrix {
                         
                             return Impl().operate(l, r);
                         };
-                    virtual ~BaseOp() = default;
-                    Code get_operation_code() override { return Impl().get_code(); };
-                private:
+                    virtual ~BaseOp() = default;                private:
                     Implementation& Impl() { return *static_cast<Implementation*>(this); }
                     friend Implementation;
 
@@ -125,8 +102,6 @@ namespace Matrix {
                         std::unique_ptr<Matrix::Representation> operate(
                             const std::unique_ptr<Matrix::Representation>& l, 
                             const std::unique_ptr<Matrix::Representation>& r);
-                Code get_code() { return Code::PLUS; };
-
                 };
 
             }
@@ -143,8 +118,6 @@ namespace Matrix {
                         std::unique_ptr<Matrix::Representation> operate(
                             const std::unique_ptr<Matrix::Representation>& l, 
                             const std::unique_ptr<Matrix::Representation>& r);
-                        Code get_code() { return Code::OUTER_PRODUCT; };
-
                 };
 
 
@@ -166,8 +139,6 @@ namespace Matrix {
                         std::unique_ptr<Matrix::Representation> operate(
                             const std::unique_ptr<Matrix::Representation>& l, 
                             const std::unique_ptr<Matrix::Representation>& r);
-                        Code get_code() { return Code::HADAMARD; };
-
                 };
 
 
@@ -177,8 +148,6 @@ namespace Matrix {
                         std::unique_ptr<Matrix::Representation> operate(
                             const std::unique_ptr<Matrix::Representation>& l, 
                             const std::unique_ptr<Matrix::Representation>& r);
-                        Code get_code() { return Code::HADAMARD; };
-
                 };
 
 
@@ -208,8 +177,6 @@ namespace Matrix {
                         std::unique_ptr<Matrix::Representation> operate(
                             const std::unique_ptr<Matrix::Representation>& l, 
                             const std::unique_ptr<Matrix::Representation>& r);
-                        Code get_code() { return Code::MULTIPLY; };
-
 
                 };
 
@@ -220,8 +187,6 @@ namespace Matrix {
                             std::unique_ptr<Matrix::Representation> operate(
                                 const std::unique_ptr<Matrix::Representation>& l, 
                                 const std::unique_ptr<Matrix::Representation>& r) ;
-                        Code get_code() { return Code::MULTIPLY; };
-
                 };
 
 
@@ -231,8 +196,6 @@ namespace Matrix {
                                     std::unique_ptr<Matrix::Representation> operate(
                                         const std::unique_ptr<Matrix::Representation>& l, 
                                         const std::unique_ptr<Matrix::Representation>& r);
-                        Code get_code() { return Code::MULTIPLY; };
-
                 };
 
 

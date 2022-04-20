@@ -11,16 +11,36 @@
 namespace Matrix {
 
 
-    std::unique_ptr<Representation> Operations::Timer::operator()(const std::unique_ptr<Matrix::Representation>& l, 
+    template <Matrix::Operations::MatrixOperatable Operator>
+    std::unique_ptr<Representation> Operations::Timer<Operator>::operator()(const std::unique_ptr<Matrix::Representation>& l, 
             const std::unique_ptr<Matrix::Representation>& r) {
 
-                start = std::chrono::steady_clock::now();
-                std::unique_ptr<Matrix::Representation> mc = this->matrix_operation->operator()(l, r);
+                std::unique_ptr<Matrix::Representation> mc;
+
+                start = std::chrono::steady_clock::now();                
+                if constexpr (Matrix::Operations::UnaryMatrixOperatable<Operator>) {
+                    mc = this->matrix_operation(l);
+                }
+                else if constexpr (Matrix::Operations::BinaryMatrixOperatable<Operator>) {
+                    mc = this->matrix_operation(l, r);
+                }
+
                 end   = std::chrono::steady_clock::now();
 
                 
                 return mc;
             }
+
+    
+            template class Operations::Timer<Matrix::Operations::Unary::ReLU>;
+            template class Operations::Timer<Matrix::Operations::Binary::HadamardProduct::Std>;
+            template class Operations::Timer<Matrix::Operations::Binary::Multiplication::ParallelDNC>;
+            template class Operations::Timer<Matrix::Operations::Binary::Multiplication::Naive>;
+            template class Operations::Timer<Matrix::Operations::Binary::Multiplication::Square>;
+            template class Operations::Timer<Matrix::Operations::Binary::Addition::Std>;
+            template class Operations::Timer<Matrix::Operations::Binary::OuterProduct::Naive>;
+
+
 
 // #ifdef CILKSCALE
     /*

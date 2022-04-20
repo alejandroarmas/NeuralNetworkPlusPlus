@@ -13,29 +13,6 @@ namespace Matrix {
     namespace Operations {
 
 
-
-            template <class Implementation> 
-            class Benchmark {
-
-                    public:
-                        Benchmark(std::unique_ptr<Operations::BaseInterface> _m) : matrix_operation(std::move(_m)) {}
-                        Code get_operation_code() { return matrix_operation->get_operation_code(); };
-
-                    protected:
-                        Implementation* Impl() { return static_cast<Implementation*>(this);}
-                        std::unique_ptr<Representation> operator()(
-                            const std::unique_ptr<Representation>& l, 
-                            const std::unique_ptr<Representation>& r = nullptr) { 
-                                return Impl()->operator()(l, r); 
-                                };
-                        ~Benchmark() = default;
-                        std::unique_ptr<Operations::BaseInterface> matrix_operation;
-                        
-
-        };
-
-
-
             /*
             DESCRIPTION:
 
@@ -58,43 +35,29 @@ namespace Matrix {
 
                 std::cout << "Performed in " << mul_bm_r.get_computation_duration_ms() << " ms." << std::endl;
             */
-            class Timer : public Benchmark<Timer> {
+            template <Matrix::Operations::MatrixOperatable Operator>
+            class Timer {
 
                 public:
-                    // Timer() : Benchmark<Timer,>(std::move(
-                        // std::make_unique<Operations::BaseInterface>())) {}
-                    Timer(std::unique_ptr<Operations::BaseInterface> _m) : 
-                        Benchmark<Timer>(std::move(_m)) {} 
+                    Timer(Operator _m) : 
+                        matrix_operation(_m) {} 
                     
                     std::unique_ptr<Representation> operator()(
                             const std::unique_ptr<Representation>& l,
                             const std::unique_ptr<Representation>& r = nullptr);
 
-                int get_computation_duration_ms() { 
-                    return std::chrono::duration_cast<std::chrono::duration<int, std::micro>>(end - start).count(); }
-
-                std::chrono::steady_clock::time_point get_start() { return start; }
-                std::chrono::steady_clock::time_point get_end()   { return end;   }
-
+                    int get_computation_duration_ms() { 
+                        return std::chrono::duration_cast<std::chrono::duration<int, std::micro>>(end - start).count(); }
+                    std::chrono::steady_clock::time_point get_start() { return start; }
+                    std::chrono::steady_clock::time_point get_end()   { return end;   }
+                    
                 private:
+                    Operator matrix_operation;
                     std::chrono::steady_clock::time_point start;
                     std::chrono::steady_clock::time_point end;
             };
 
-
-        // #ifdef CILKSCALE
-            // class ParallelMeasurer : public Benchmark<ParallelMeasurer> {
-
-            //     public:
-            //         ParallelMeasurer(std::unique_ptr<Operations::BaseInterface> _m) : 
-            //             Benchmark<ParallelMeasurer>(std::move(_m)) {}
-            //             std::unique_ptr<Representation> operator()(
-            //                 const std::unique_ptr<Representation>& l, 
-            //                 const std::unique_ptr<Representation>& r); 
-
-            // };
-        // #endif
-
+    
 
         }
 
