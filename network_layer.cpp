@@ -15,9 +15,7 @@ namespace NeuralNetwork {
 
     std::shared_ptr<Tensor> MatrixMultiplyStep::_doForward(std::shared_ptr<Tensor> input) {
 
-        TensorOp<
-            Matrix::Operations::Binary::Multiplication::ParallelDNC>
-             mm(Matrix::Operations::Binary::Multiplication::ParallelDNC{});
+        TensorOp mm(Matrix::Operations::Binary::Multiplication::ParallelDNC{});
 
 
 
@@ -38,7 +36,7 @@ namespace NeuralNetwork {
 
 
 
-        TensorOp<Matrix::Operations::Binary::Addition::Std> add(Matrix::Operations::Binary::Addition::Std{});
+        TensorOp add(Matrix::Operations::Binary::Addition::Std{});
 
 
 
