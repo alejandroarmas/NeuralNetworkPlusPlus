@@ -20,13 +20,13 @@ namespace Matrix {
 
 
         template <typename T>
-        concept UnaryMatrixOperatable = requires(T _op, std::unique_ptr<Matrix::Representation> mtx) {
+        concept UnaryMatrixOperatable = requires(T _op, Matrix::Representation mtx) {
             _op.operate(mtx);
             { _op.operate(mtx) } -> same_as<decltype(mtx)>;
         };
 
         template <typename T>
-        concept BinaryMatrixOperatable = requires(T _op, std::unique_ptr<Matrix::Representation> mtx) {
+        concept BinaryMatrixOperatable = requires(T _op, Matrix::Representation mtx) {
             _op.operate(mtx, mtx);
             { _op.operate(mtx, mtx) } -> same_as<decltype(mtx)>;
         };

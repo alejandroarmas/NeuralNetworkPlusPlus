@@ -13,7 +13,7 @@ namespace Matrix {
         class Base {
 
             public:
-                virtual std::unique_ptr<Matrix::Representation> operator() (std::unique_ptr<Matrix::Representation> m) = 0;
+                virtual Matrix::Representation operator() (Matrix::Representation& m) = 0;
         };
 
 
@@ -21,7 +21,7 @@ namespace Matrix {
         class Normal : public Base {
 
             public:
-                std::unique_ptr<Matrix::Representation> operator() (std::unique_ptr<Matrix::Representation> m) override;
+                Matrix::Representation operator() (Matrix::Representation& m) override;
         };
 
 
@@ -29,7 +29,7 @@ namespace Matrix {
         class Tester : public Base {
 
             public:
-                std::unique_ptr<Matrix::Representation> operator() (std::unique_ptr<Matrix::Representation> m) override;
+                Matrix::Representation operator() (Matrix::Representation& m) override;
         };
 
       

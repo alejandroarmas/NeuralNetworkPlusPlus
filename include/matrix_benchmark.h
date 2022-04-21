@@ -42,9 +42,9 @@ namespace Matrix {
                     Timer(Operator _m) : 
                         matrix_operation(_m) {} 
                     
-                    std::unique_ptr<Representation> operator()(
-                            const std::unique_ptr<Representation>& l,
-                            const std::unique_ptr<Representation>& r = nullptr);
+                    Representation operator()(
+                            const Representation& l,
+                            const Representation& r);
 
                     int get_computation_duration_ms() { 
                         return std::chrono::duration_cast<std::chrono::duration<int, std::micro>>(end - start).count(); }

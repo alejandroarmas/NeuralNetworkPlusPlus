@@ -14,11 +14,8 @@ namespace NeuralNetwork {
         if (input == nullptr) {
             throw std::invalid_argument("Matrix has no data (pointing to null).");
         }
-        
-        
-        
-        Computation::Graph::TensorOp<Matrix::Operations::Unary::ReLU> relu(Matrix::Operations::Unary::ReLU{});
-
+                
+        Computation::Graph::TensorOp relu(Matrix::Operations::Unary::ReLU{});
 
 
         std::shared_ptr<Computation::Graph::Tensor> output = relu(input);

@@ -31,12 +31,23 @@ namespace Matrix {
 
 
         public:
-            typedef typename std::vector<float>::iterator matrix_iter;
+            using matrix_iter = std::vector<float>::iterator;
+            using const_matrix_iter = std::vector<float>::const_iterator;
             
+            Representation() : rows(0), columns(0) {}
             Representation(Rows _l, Columns _w) : rows(_l.get()), columns(_w.get()), data(std::vector<float>(_l.get() * _w.get(), 0)) {}
             Representation(const Matrix::Representation& _other) : rows(_other.num_rows()), columns(_other.num_cols()), data(_other.data) {}
             Representation(const Matrix::Representation&& _other) : rows(_other.num_rows()), columns(_other.num_cols()), data(std::move(_other.data)) {}
             
+            Representation operator=(const Matrix::Representation& _other) {
+                rows = _other.num_rows(); columns = _other.num_cols(); data = _other.data;
+                return *this;
+             }
+            Representation operator=(const Matrix::Representation&& _other) {
+                rows = _other.num_rows(); columns = _other.num_cols(); data = std::move(_other.data);
+                return *this; 
+            }
+
             bool operator==(const Matrix::Representation _other);
             bool operator!=(const Matrix::Representation _other);
 
@@ -46,7 +57,7 @@ namespace Matrix {
             // constexpr float get(u_int64_t r, u_int64_t c);
             // constexpr void put(u_int64_t r, u_int64_t c, float val);
             
-            constexpr float get(u_int64_t r, u_int64_t c) {
+            constexpr float get(u_int64_t r, u_int64_t c) const {
 
                 uint64_t calculated_index = c + r * columns; 
 
@@ -70,8 +81,13 @@ namespace Matrix {
             }
 
 
-            constexpr matrix_iter scanStart() { return this->data.begin(); }
-            constexpr matrix_iter scanEnd() { return this->data.end(); }
+            constexpr matrix_iter scanStart() { return data.begin(); }
+            constexpr matrix_iter scanEnd()   { return data.end(); }
+            
+            constexpr const_matrix_iter constScanStart() const { return data.cbegin(); }
+            constexpr const_matrix_iter constScanEnd() const { return data.cend(); }
+
+
         private:
             u_int64_t rows;
             u_int64_t columns;

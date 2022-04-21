@@ -67,7 +67,7 @@ namespace NeuralNetwork {
 
             class Tensor {
 
-                using matrix_t = std::unique_ptr<Matrix::Representation>;
+                using matrix_t = Matrix::Representation;
 
                 public:
                     Tensor(Matrix::Rows _l, Matrix::Columns _w, 
@@ -75,26 +75,26 @@ namespace NeuralNetwork {
                         IsLeaf _f       = IsLeaf(true),
                         IsRecordable _r = IsRecordable(true));
                                                             
-                    Tensor(std::unique_ptr<Matrix::Representation> _m, 
+                    Tensor(const Matrix::Representation& _m, 
                         IsTrackable _t  = IsTrackable(true), 
                         IsLeaf _f       = IsLeaf(true),
                         IsRecordable _r = IsRecordable(true));
 
 
-                    bool     is_tensor_leaf()   { 
-                        return is_leaf;           }
+                    bool     is_tensor_leaf()   
+                        { return is_leaf;           }
 
-                    bool     is_requires_grad() { 
-                        return requires_grad;     }
+                    bool     is_requires_grad()
+                        { return requires_grad; }
 
-                    bool     is_recorded()      { 
-                        return record_statistics; }
+                    bool     is_recorded()      
+                        { return record_statistics; }
 
-                    matrix_t release_matrix()   { 
-                        return std::move(matrix); }
+                    matrix_t release_matrix()   
+                        { return matrix; }
 
-                    matrix_t release_grad()     { 
-                        return std::move(grad);   }
+                    matrix_t release_grad()     
+                        { return grad.value_or(Matrix::Representation()); }
                     
                     void     register_operation(
                         const std::shared_ptr<
@@ -110,7 +110,7 @@ namespace NeuralNetwork {
                     void register_leaf_op(void);
                 private:
                     matrix_t matrix;
-                    matrix_t grad;
+                    std::optional<matrix_t> grad;
                     std::shared_ptr<RegisteredOperation> graph_node;
                     bool is_leaf;
                     bool requires_grad;

@@ -13,15 +13,16 @@ namespace Matrix {
         namespace Unary {
 
    
-            std::unique_ptr<Matrix::Representation> ReLU::operate(
-                        const std::unique_ptr<Matrix::Representation>& m){
+            Matrix::Representation ReLU::operate(
+                        const Matrix::Representation& m) const{
 
-                std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(
-                            Matrix::Rows(m->num_rows()), 
-                            Matrix::Columns(m->num_cols())
+                Matrix::Representation output = Matrix::Representation(
+                            Matrix::Rows(m.num_rows()), 
+                            Matrix::Columns(m.num_cols())
                     );
+                
 
-                std::replace_copy_if(m->scanStart(), m->scanEnd(), output->scanStart(), 
+                std::replace_copy_if(m.constScanStart(), m.constScanEnd(), output.scanStart(), 
                     [](float z){ return z < 0;}, 0);
 
                 return output;
@@ -37,17 +38,17 @@ namespace Matrix {
 
             namespace Addition {
 
-                std::unique_ptr<Matrix::Representation> Std::operate(
-                        const std::unique_ptr<Matrix::Representation>& l, 
-                        const std::unique_ptr<Matrix::Representation>& r) {
+                Matrix::Representation Std::operate(
+                        const Matrix::Representation& l, 
+                        const Matrix::Representation& r) const {
 
-                    if ((l->num_rows() != r->num_rows()) && (l->num_cols() != r->num_cols())) {
+                    if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols())) {
                         throw std::length_error(Utility::debug_message_2(l, r));
                     }
                         
-                    auto output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
+                    auto output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
 
-                    std::transform(l->scanStart(), l->scanEnd(), r->scanStart(), output->scanStart(), std::plus<float>());
+                    std::transform(l.constScanStart(), l.constScanEnd(), r.constScanStart(), output.scanStart(), std::plus<float>());
 
                     return output;
                 }
@@ -57,34 +58,34 @@ namespace Matrix {
             namespace OuterProduct {
 
 
-                std::unique_ptr<Matrix::Representation> Naive::operate(
-                        const std::unique_ptr<Matrix::Representation>& l, 
-                        const std::unique_ptr<Matrix::Representation>& r) {
+                Matrix::Representation Naive::operate(
+                        const Matrix::Representation& l, 
+                        const Matrix::Representation& r) const {
 
-                    if (l->num_rows() != r->num_rows() && l->num_cols() != r->num_cols()) {
+                    if (l.num_rows() != r.num_rows() && l.num_cols() != r.num_cols()) {
                         throw std::length_error(Utility::debug_message_2(l, r));
                     }
-                    if (l->num_rows() != 1 && l->num_cols() != 1) {
+                    if (l.num_rows() != 1 && l.num_cols() != 1) {
                         throw std::length_error("Operands are not Vectors.");
                     }
                     
                     u_int64_t dimension; 
 
-                    if (l->num_rows() > l->num_cols()) {
-                        dimension = l->num_rows(); 
+                    if (l.num_rows() > l.num_cols()) {
+                        dimension = l.num_rows(); 
                     }
-                    else dimension = l->num_cols(); 
+                    else dimension = l.num_cols(); 
 
-                    auto output = std::make_unique<Matrix::Representation>(Rows(dimension), Columns(dimension));
+                    auto output = Matrix::Representation(Rows(dimension), Columns(dimension));
 
-                    auto li = l->scanStart();
+                    auto li = l.constScanStart();
 
-                    for (int i = 0; li != l->scanEnd(); li++, i++) {
-                        auto ri = r->scanStart();
+                    for (int i = 0; li != l.constScanEnd(); li++, i++) {
+                        auto ri = r.constScanStart();
                         
-                        for (int j = 0; ri != r->scanEnd(); ri++, j++) {
+                        for (int j = 0; ri != r.constScanEnd(); ri++, j++) {
                             float val = *li * *ri;
-                            output->put(i, j, val);
+                            output.put(i, j, val);
                         }
                     }
                     
@@ -96,38 +97,40 @@ namespace Matrix {
 
             namespace HadamardProduct {
 
-                std::unique_ptr<Matrix::Representation> Std::operate(
-                        const std::unique_ptr<Matrix::Representation>& l, 
-                        const std::unique_ptr<Matrix::Representation>& r) {
+                Matrix::Representation Std::operate(
+                        const Matrix::Representation& l, 
+                        const Matrix::Representation& r) const {
 
-                        auto output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
+                        auto output = Matrix::Representation(
+                                Rows(l.num_rows()), 
+                                Columns(r.num_cols()));
 
                         
-                        std::transform(l->scanStart(), l->scanEnd(), r->scanStart(), output->scanStart(), std::multiplies<float>()); 
+                        std::transform(l.constScanStart(), l.constScanEnd(), r.constScanStart(), output.scanStart(), std::multiplies<float>()); 
                         
                     return output;
                 }
 
 
-                std::unique_ptr<Matrix::Representation> Naive::operate(
-                        const std::unique_ptr<Matrix::Representation>& l, 
-                        const std::unique_ptr<Matrix::Representation>& r) {
+                Matrix::Representation Naive::operate(
+                        const Matrix::Representation& l, 
+                        const Matrix::Representation& r) const {
 
-                    if ((l->num_rows() != r->num_rows()) && (l->num_cols() != r->num_cols())) {
+                    if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols())) {
                         throw std::length_error("Matrix A not same size as Matrix B.");
                     }
 
-                    std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
+                    Matrix::Representation output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
 
 
-                    for (u_int64_t i = 0; i < l->num_rows(); i++) {
+                    for (u_int64_t i = 0; i < l.num_rows(); i++) {
                         
-                        for (u_int64_t j = 0; j < r->num_cols(); j++) {
+                        for (u_int64_t j = 0; j < r.num_cols(); j++) {
 
 
-                            float val = l->get(i, j) * r->get(i, j);
+                            float val = l.get(i, j) * r.get(i, j);
 
-                            output->put(i, j, val);
+                            output.put(i, j, val);
 
                         }
 
@@ -141,30 +144,30 @@ namespace Matrix {
 
             namespace Multiplication {
 
-                std::unique_ptr<Matrix::Representation> Naive::operate(
-                        const std::unique_ptr<Matrix::Representation>& l, 
-                        const std::unique_ptr<Matrix::Representation>& r) {
+                Matrix::Representation Naive::operate(
+                        const Matrix::Representation& l, 
+                        const Matrix::Representation& r) const {
 
-                    if (l->num_cols() != r->num_rows()) {
+                    if (l.num_cols() != r.num_rows()) {
                         throw std::length_error(Utility::debug_message(l, r));
 
                     }
 
-                    std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
+                    Matrix::Representation output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
 
 
-                    for (u_int64_t i = 0; i < l->num_rows(); i++) {
+                    for (u_int64_t i = 0; i < l.num_rows(); i++) {
                         
-                        for (u_int64_t j = 0; j < r->num_cols(); j++) {
+                        for (u_int64_t j = 0; j < r.num_cols(); j++) {
 
 
                             float val = 0;
 
-                            for (u_int64_t k = 0; k < l->num_cols(); k++) {
-                                val += l->get(i, k) * r->get(k, j);
+                            for (u_int64_t k = 0; k < l.num_cols(); k++) {
+                                val += l.get(i, k) * r.get(k, j);
                             }
 
-                            output->put(i, j, val);
+                            output.put(i, j, val);
 
                         }
 
@@ -179,7 +182,7 @@ namespace Matrix {
                     /*
                     Adapted from https://ocw.mit.edu/courses/mathematics/18-335j-introduction-to-numerical-methods-spring-2019/week-5/MIT18_335JS19_lec12.pdf
                     */
-                    void add_matmul_rec(std::vector<float>::iterator a, std::vector<float>::iterator b, std::vector<float>::iterator c, 
+                    void add_matmul_rec(std::vector<float>::const_iterator a, std::vector<float>::const_iterator b, std::vector<float>::iterator c, 
                         int m, int n, int p, int fdA, int fdB, int fdC) {
                         
                         if (m + n + p <= 48) {  
@@ -213,47 +216,47 @@ namespace Matrix {
                     }
 
 
-                std::unique_ptr<Matrix::Representation> ParallelDNC::operate(
-                        const std::unique_ptr<Matrix::Representation>& l, 
-                        const std::unique_ptr<Matrix::Representation>& r) {
+                Matrix::Representation ParallelDNC::operate(
+                        const Matrix::Representation& l, 
+                        const Matrix::Representation& r) const {
 
-                    if (l->num_cols() != r->num_rows()) {
+                    if (l.num_cols() != r.num_rows()) {
                         
                         throw std::length_error(Utility::debug_message(l, r));
                     }
 
-                    std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
+                    Matrix::Representation output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
 
-                    add_matmul_rec(l->scanStart(), r->scanStart(), output->scanStart(), l->num_rows(), l->num_cols(), r->num_cols(), l->num_cols(), r->num_cols(), r->num_cols());
+                    add_matmul_rec(l.constScanStart(), r.constScanStart(), output.scanStart(), l.num_rows(), l.num_cols(), r.num_cols(), l.num_cols(), r.num_cols(), r.num_cols());
 
                     return output;
                 }
         
         
-                std::unique_ptr<Matrix::Representation> Square::operate(
-                        const std::unique_ptr<Matrix::Representation>& l, 
-                        const std::unique_ptr<Matrix::Representation>& r) {
+                Matrix::Representation Square::operate(
+                        const Matrix::Representation& l, 
+                        const Matrix::Representation& r) const {
 
-                    if (l->num_cols() != r->num_rows()) {
+                    if (l.num_cols() != r.num_rows()) {
                         throw std::length_error(Utility::debug_message(l, r));
 
                     }
 
-                    std::unique_ptr<Matrix::Representation> output = std::make_unique<Matrix::Representation>(Rows(l->num_rows()), Columns(r->num_cols()));
+                    Matrix::Representation output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
 
 
-                    cilk_for (u_int64_t i = 0; i < l->num_rows(); i++) {
+                    cilk_for (u_int64_t i = 0; i < l.num_rows(); i++) {
                         
-                        for (u_int64_t j = 0; j < r->num_cols(); j++) {
+                        for (u_int64_t j = 0; j < r.num_cols(); j++) {
 
 
                             float val = 0;
 
-                            for (u_int64_t k = 0; k < l->num_cols(); k++) {
-                                val += l->get(i, k) * r->get(k, j);
+                            for (u_int64_t k = 0; k < l.num_cols(); k++) {
+                                val += l.get(i, k) * r.get(k, j);
                             }
 
-                            output->put(i, j, val);
+                            output.put(i, j, val);
 
                         }
 

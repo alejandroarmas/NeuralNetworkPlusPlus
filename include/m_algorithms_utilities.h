@@ -24,11 +24,11 @@ namespace Matrix {
 
                     
 
-                    std::string debug_message(const std::unique_ptr<Matrix::Representation>& l, 
-                                            const std::unique_ptr<Matrix::Representation>& r);
+                    std::string debug_message(const Matrix::Representation& l, 
+                                            const Matrix::Representation& r);
                     
-                    std::string debug_message_2(const std::unique_ptr<Matrix::Representation>& l, 
-                                            const std::unique_ptr<Matrix::Representation>& r);
+                    std::string debug_message_2(const Matrix::Representation& l, 
+                                            const Matrix::Representation& r);
                     
 
 

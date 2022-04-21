@@ -23,12 +23,12 @@ namespace NeuralNetwork {
             Tensor::Tensor(Matrix::Rows _l, Matrix::Columns _w, 
                 IsTrackable _t, IsLeaf _f, IsRecordable _r): 
                 stats({}),
-                matrix(std::make_unique<Matrix::Representation>(_l, _w)), 
-                grad(nullptr), graph_node(nullptr), is_leaf(_f.get()),
+                matrix(Matrix::Representation(_l, _w)), 
+                grad({}), graph_node(nullptr), is_leaf(_f.get()),
                 requires_grad(_t.get()), record_statistics(_r.get()) {
 
                     Matrix::Generation::Normal<0, 1> normal_distribution_init;
-                    matrix = normal_distribution_init(std::move(matrix));
+                    matrix = normal_distribution_init(matrix);
 
                 if (is_leaf) this->register_leaf_op(); 
                         
@@ -36,10 +36,10 @@ namespace NeuralNetwork {
             }
 
 
-            Tensor::Tensor(std::unique_ptr<Matrix::Representation> _m, 
+            Tensor::Tensor(const Matrix::Representation& _m, 
                 IsTrackable _t, IsLeaf _f, IsRecordable _r) : 
                 stats({}),
-                matrix(std::move(_m)), grad(nullptr), 
+                matrix(_m), grad({}), 
                 graph_node(nullptr), is_leaf(_f.get()), 
                 requires_grad(_t.get()), record_statistics(_r.get()){
                     
@@ -99,7 +99,7 @@ namespace NeuralNetwork {
                     ComputeTag _ ) {
 
                         
-                    std::unique_ptr<Matrix::Representation> out_matrix;
+                    Matrix::Representation out_matrix;
                     std::shared_ptr<Tensor> out_tensor;
                     std::shared_ptr<RegisteredOperation> out_op;
 
@@ -108,14 +108,12 @@ namespace NeuralNetwork {
 
 
                     if constexpr (Matrix::Operations::UnaryMatrixOperatable<Operator>) {
-                        out_matrix = _op(
-                                std::move(l->release_matrix())
-                            );
+                        out_matrix = _op(l->release_matrix());
                     }
                     else if constexpr (Matrix::Operations::BinaryMatrixOperatable<Operator>) {
                         out_matrix = _op(
-                                    std::move(l->release_matrix()),
-                                    std::move(r->release_matrix())
+                                    l->release_matrix(),
+                                    r->release_matrix()
                                 );
                     }
 
@@ -163,7 +161,7 @@ namespace NeuralNetwork {
                     Matrix::Operations::Utility::Codify codify;
                     Matrix::Operations::Code op_code = codify(_op); 
 
-                    std::unique_ptr<Matrix::Representation> out_matrix;
+                    Matrix::Representation out_matrix;
                     std::shared_ptr<Tensor> out_tensor;
                     std::shared_ptr<RegisteredOperation> out_op;
 
@@ -172,15 +170,15 @@ namespace NeuralNetwork {
 
                     if constexpr (Matrix::Operations::UnaryMatrixOperatable<Operator>) {
                         out_matrix = _op(
-                                std::move(l->release_matrix())
-                            );
+                                    l->release_matrix());
                     }
                     else if constexpr (Matrix::Operations::BinaryMatrixOperatable<Operator>) {
                         out_matrix = _op(
-                                    std::move(l->release_matrix()),
-                                    std::move(r->release_matrix())
+                                    l->release_matrix(),
+                                    r->release_matrix()
                                 );
                     }
+
                     _s.set_matrix_end(std::chrono::steady_clock::now());
                         
                     

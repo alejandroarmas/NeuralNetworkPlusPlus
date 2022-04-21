@@ -11,23 +11,23 @@
 
 
 template <int Mean, int Variance> 
-std::unique_ptr<Matrix::Representation> Matrix::Generation::Normal<Mean, Variance>::operator() (std::unique_ptr<Matrix::Representation> m){
+Matrix::Representation Matrix::Generation::Normal<Mean, Variance>::operator() (Matrix::Representation& m){
 
     std::random_device rd{};
     std::mt19937 gen{rd()};
 
     std::normal_distribution<> d{Mean, Variance};
 
-    std::transform(m->scanStart(), m->scanEnd(), m->scanStart(), [&gen, &d](const auto _){ return DAMPEN * d(gen); });
+    std::transform(m.scanStart(), m.scanEnd(), m.scanStart(), [&gen, &d](const auto _){ return DAMPEN * d(gen); });
 
     return m;
 }
 
 
 template <int Val> 
-std::unique_ptr<Matrix::Representation> Matrix::Generation::Tester<Val>::operator() (std::unique_ptr<Matrix::Representation> m) {
+Matrix::Representation Matrix::Generation::Tester<Val>::operator() (Matrix::Representation& m) {
  
-    std::transform(m->scanStart(), m->scanEnd(), m->scanStart(), [](auto _){ return Val; });
+    std::transform(m.scanStart(), m.scanEnd(), m.scanStart(), [](auto _){ return Val; });
 
     return m;
 }

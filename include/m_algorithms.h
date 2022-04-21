@@ -31,17 +31,15 @@ namespace Matrix {
             class UnaryAdapter {
 
                 public:
-                    std::unique_ptr<Matrix::Representation> operator()(
-                        const std::unique_ptr<Matrix::Representation>& l) {
-                        if (!l) {
-                            throw std::invalid_argument("Left operand not referencing a matrix.");
-                        }
+                    Matrix::Representation operator()(
+                        const Matrix::Representation& l) const{
+
                         return Impl().operate(l); 
                         };
                     
                 ~UnaryAdapter() = default;
                 private:
-                    Implementation& Impl() { return *static_cast<Implementation*>(this); }
+                    Implementation& Impl() const { return *static_cast<Implementation*>(const_cast<UnaryAdapter<Implementation>*>(this)); }
                     friend Implementation;
                     
 
@@ -53,8 +51,8 @@ namespace Matrix {
             class ReLU : public UnaryAdapter<ReLU> {
 
                 public:
-                    std::unique_ptr<Matrix::Representation> operate(
-                        const std::unique_ptr<Matrix::Representation>& m);
+                    Matrix::Representation operate(
+                        const Matrix::Representation& m) const;
             };
 
             static_assert(MatrixOperatable<ReLU>);
@@ -70,21 +68,15 @@ namespace Matrix {
 
                 public:
                     BaseOp() = default;
-                    virtual std::unique_ptr<Matrix::Representation> operator()(
-                        const std::unique_ptr<Matrix::Representation>& l, 
-                        const std::unique_ptr<Matrix::Representation>& r) { 
-                            
-                        if (!l) {
-                            throw std::invalid_argument("Left operand not referencing a matrix.");
-                        }
-                        if (!r) {
-                            throw std::invalid_argument("Right operand not referencing a matrix.");
-                        }
-                        
+                    virtual Matrix::Representation operator()(
+                        const Matrix::Representation& l, 
+                        const Matrix::Representation& r) const { 
+                                                    
                             return Impl().operate(l, r);
                         };
-                    virtual ~BaseOp() = default;                private:
-                    Implementation& Impl() { return *static_cast<Implementation*>(this); }
+                    virtual ~BaseOp() = default;
+                private:
+                    Implementation& Impl() const { return *static_cast<Implementation*>(const_cast<BaseOp<Implementation>*>(this)); }
                     friend Implementation;
 
             };
@@ -99,9 +91,9 @@ namespace Matrix {
 
                 class Std : public BaseOp<Std> {
                     public:
-                        std::unique_ptr<Matrix::Representation> operate(
-                            const std::unique_ptr<Matrix::Representation>& l, 
-                            const std::unique_ptr<Matrix::Representation>& r);
+                        Matrix::Representation operate(
+                            const Matrix::Representation& l, 
+                            const Matrix::Representation& r) const;
                 };
 
             }
@@ -115,9 +107,9 @@ namespace Matrix {
 
                 class Naive : public BaseOp<Naive> {
                     public:
-                        std::unique_ptr<Matrix::Representation> operate(
-                            const std::unique_ptr<Matrix::Representation>& l, 
-                            const std::unique_ptr<Matrix::Representation>& r);
+                        Matrix::Representation operate(
+                            const Matrix::Representation& l, 
+                            const Matrix::Representation& r) const;
                 };
 
 
@@ -136,18 +128,18 @@ namespace Matrix {
                 class Naive : public BaseOp<Naive> {
 
                     public:
-                        std::unique_ptr<Matrix::Representation> operate(
-                            const std::unique_ptr<Matrix::Representation>& l, 
-                            const std::unique_ptr<Matrix::Representation>& r);
+                        Matrix::Representation operate(
+                            const Matrix::Representation& l, 
+                            const Matrix::Representation& r) const;
                 };
 
 
                 class Std : public BaseOp<Naive> {
 
                     public:
-                        std::unique_ptr<Matrix::Representation> operate(
-                            const std::unique_ptr<Matrix::Representation>& l, 
-                            const std::unique_ptr<Matrix::Representation>& r);
+                        Matrix::Representation operate(
+                            const Matrix::Representation& l, 
+                            const Matrix::Representation& r) const;
                 };
 
 
@@ -161,12 +153,12 @@ namespace Matrix {
             /*
             Matrix Multiplication Usage:
 
-                std::unique_ptr<Matrix::Representation> ma = std::make_unique<Matrix::Representation>(2000, 100);
-                std::unique_ptr<Matrix::Representation> mb = std::make_unique<Matrix::Representation>(100, 3000);
+                Matrix::Representation ma = std::make_unique<Matrix::Representation>(2000, 100);
+                Matrix::Representation mb = std::make_unique<Matrix::Representation>(100, 3000);
 
                 Matrix::Operations::Multiplication::Naive mul;
 
-                std::unique_ptr<Matrix::Representation> mc = mul(ma, mb);
+                Matrix::Representation mc = mul(ma, mb);
             */
             namespace Multiplication {
 
@@ -174,9 +166,9 @@ namespace Matrix {
                 class Naive : public BaseOp<Naive> {
 
                     public:
-                        std::unique_ptr<Matrix::Representation> operate(
-                            const std::unique_ptr<Matrix::Representation>& l, 
-                            const std::unique_ptr<Matrix::Representation>& r);
+                        Matrix::Representation operate(
+                            const Matrix::Representation& l, 
+                            const Matrix::Representation& r) const;
 
                 };
 
@@ -184,18 +176,18 @@ namespace Matrix {
                 class Square : public BaseOp<Square> {
 
                         public:
-                            std::unique_ptr<Matrix::Representation> operate(
-                                const std::unique_ptr<Matrix::Representation>& l, 
-                                const std::unique_ptr<Matrix::Representation>& r) ;
+                            Matrix::Representation operate(
+                                const Matrix::Representation& l, 
+                                const Matrix::Representation& r) const ;
                 };
 
 
                 class ParallelDNC : public BaseOp<ParallelDNC> {
 
                                 public:
-                                    std::unique_ptr<Matrix::Representation> operate(
-                                        const std::unique_ptr<Matrix::Representation>& l, 
-                                        const std::unique_ptr<Matrix::Representation>& r);
+                                    Matrix::Representation operate(
+                                        const Matrix::Representation& l, 
+                                        const Matrix::Representation& r) const;
                 };
 
 

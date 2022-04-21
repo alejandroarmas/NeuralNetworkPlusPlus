@@ -12,17 +12,17 @@ namespace Matrix {
 
 
     template <Matrix::Operations::MatrixOperatable Operator>
-    std::unique_ptr<Representation> Operations::Timer<Operator>::operator()(const std::unique_ptr<Matrix::Representation>& l, 
-            const std::unique_ptr<Matrix::Representation>& r) {
+    Representation Operations::Timer<Operator>::operator()(const Matrix::Representation& l, 
+            const Matrix::Representation& r) {
 
-                std::unique_ptr<Matrix::Representation> mc;
+                Matrix::Representation mc;
 
                 start = std::chrono::steady_clock::now();                
                 if constexpr (Matrix::Operations::UnaryMatrixOperatable<Operator>) {
-                    mc = this->matrix_operation(l);
+                    mc = matrix_operation(l);
                 }
                 else if constexpr (Matrix::Operations::BinaryMatrixOperatable<Operator>) {
-                    mc = this->matrix_operation(l, r);
+                    mc = matrix_operation(l, r);
                 }
 
                 end   = std::chrono::steady_clock::now();
