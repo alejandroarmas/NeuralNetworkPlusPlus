@@ -28,20 +28,20 @@ namespace NeuralNetwork {
                 public:
 
                     constexpr void set_operation_code(Matrix::Operations::Code _c) { op_type = _c; }
-                    constexpr Matrix::Operations::Code get_operation_code() { return op_type; }
+                    constexpr Matrix::Operations::Code get_operation_code() const { return op_type; }
                     
                     constexpr void set_operation_string(const std::string_view& _s) { op_string = _s; }
-                    constexpr std::string_view get_operation_string() { return op_string; }
+                    constexpr std::string_view get_operation_string() const { return op_string; }
 
-                    void set_graph_start( time_t _t) { tensor_graph_t1     = _t; }
-                    void set_graph_end(   time_t _t) { tensor_graph_t2     = _t; }
-                    void set_matrix_start(time_t _t) { matrix_operation_t1 = _t; }
-                    void set_matrix_end(  time_t _t) { matrix_operation_t2 = _t; }
+                    constexpr void set_graph_start( time_t _t) { tensor_graph_t1     = _t; }
+                    constexpr void set_graph_end(   time_t _t) { tensor_graph_t2     = _t; }
+                    constexpr void set_matrix_start(time_t _t) { matrix_operation_t1 = _t; }
+                    constexpr void set_matrix_end(  time_t _t) { matrix_operation_t2 = _t; }
                     
-                    time_t get_graph_start( ) { return tensor_graph_t1    ; }
-                    time_t get_graph_end(   ) { return tensor_graph_t2    ; }
-                    time_t get_matrix_start() { return matrix_operation_t1; }
-                    time_t get_matrix_end(  ) { return matrix_operation_t2; }
+                    constexpr time_t get_graph_start( ) const { return tensor_graph_t1    ; }
+                    constexpr time_t get_graph_end(   ) const { return tensor_graph_t2    ; }
+                    constexpr time_t get_matrix_start() const { return matrix_operation_t1; }
+                    constexpr time_t get_matrix_end(  ) const { return matrix_operation_t2; }
 
                     
                 private:

@@ -2,6 +2,7 @@
 #define NETWORK_LAYER_H
 
 #include "tensor.h"
+#include "m_algorithms_utilities.h"
 
 #include <cstdint>
 #include <memory>
@@ -64,23 +65,8 @@ namespace NeuralNetwork {
 
 
                 if (out->stats.has_value()) {
-
-                    auto m2 = out->stats->get_matrix_end();
-                    auto m1 = out->stats->get_matrix_start();
-
-                    auto g2 = out->stats->get_graph_end();
-                    auto g1 = out->stats->get_graph_start();
-
-                    auto op_str = out->stats->get_operation_string();
-
-
-                    auto time_performing_operation = std::chrono::duration_cast<std::chrono::duration<int, std::micro>>(m2 - m1).count(); 
-                    auto time_making_graph = std::chrono::duration_cast<std::chrono::duration<int, std::micro>>(g2 - g1).count() - time_performing_operation;
-                    
-                    std::cout << op_str << " performance: " << std::endl;
-                    std::cout << "\t Time making graph (ms): " << time_making_graph << std::endl;
-                    std::cout << "\t Time performing operation (ms): " << time_performing_operation << std::endl;
-
+                    Matrix::Operations::Utility::PrintTensorStats p;
+                    p(out->stats.value());
                 }
 
                 return out;

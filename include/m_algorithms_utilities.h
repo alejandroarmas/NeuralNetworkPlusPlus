@@ -3,6 +3,7 @@
 
 
 #include <algorithm>
+#include <chrono>
 #include <functional>
 #include <exception>
 #include <iostream>
@@ -10,6 +11,7 @@
 
 
 #include "matrix.h"
+#include "tensor.h"
 #include "m_algorithms.h"
 
 
@@ -138,6 +140,36 @@ namespace Matrix {
                     };
 
                     
+
+                    class PrintTensorStats {
+
+                        public:
+                             void operator()(
+                                const NeuralNetwork::Computation::Graph::TensorStatistics& stats) {
+
+                                    auto m2 = stats.get_matrix_end();
+                                    auto m1 = stats.get_matrix_start();
+
+                                    auto g2 = stats.get_graph_end();
+                                    auto g1 = stats.get_graph_start();
+
+                                    auto op_str = stats.get_operation_string();
+
+
+                                    auto time_performing_operation = std::chrono::duration_cast<std::chrono::duration<int, std::micro>>(m2 - m1).count(); 
+                                    auto time_making_graph = std::chrono::duration_cast<std::chrono::duration<int, std::micro>>(g2 - g1).count() - time_performing_operation;
+                                    
+                                    std::cout << op_str << " performance: " << std::endl;
+                                    std::cout << "\t Time making graph (ms): " << time_making_graph << std::endl;
+                                    std::cout << "\t Time performing operation (ms): " << time_performing_operation << std::endl;
+
+                           
+
+                            }
+
+
+                    };
+
 
 
                 }
