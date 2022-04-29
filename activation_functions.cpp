@@ -1,5 +1,6 @@
 #include <memory>
 
+#include "tensor_forward_wrapper.h"
 #include "activation_functions.h"
 #include "m_algorithms.h"
 // #include "matrix_printer.h"

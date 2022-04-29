@@ -47,11 +47,6 @@ int main(void) {
 
     auto out = model.forward(ma);
 
-    // NeuralNetwork::Computation::Tree::ComputeOperation handler;
-    // handler.setNextHandler(std::make_unique<NeuralNetwork::Computation::Tree::TimerHandler>());
-    // handler.setNextHandler(std::make_unique<NeuralNetwork::Computation::Tree::CreateAutoDiffNode>());
-    // handler.handle("test");
-
 
     return 0;
 }

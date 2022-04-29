@@ -2,6 +2,7 @@
 #include <algorithm>  // std::for_each
 
 #include "tensor.h"
+#include "tensor_forward_wrapper.h"
 #include "network_layer.h" 
 #include "m_algorithms.h"
 // #include "matrix_printer.h"
