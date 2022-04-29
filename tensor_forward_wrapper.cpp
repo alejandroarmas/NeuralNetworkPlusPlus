@@ -23,7 +23,7 @@ namespace NeuralNetwork {
         namespace Graph {
 
 
-                        template <Matrix::Operations::MatrixOperatable Operator>
+            template <Matrix::Operations::MatrixOperatable Operator>
             std::shared_ptr<Tensor> TensorOp<Operator>::operator()(
                 const std::shared_ptr<Tensor> l, 
                 const std::shared_ptr<Tensor> r) {
@@ -89,14 +89,16 @@ namespace NeuralNetwork {
                     
 
                     if constexpr (Matrix::Operations::UnaryMatrixOperatable<Operator>) {
-                        out_op = RegisteredOperation::create(op_code, 
-                                    out_tensor, 
+                        out_op = OperationFactory::create(
+                                    op_code, 
+                                    *out_tensor, 
                                     l->get_operation()
                             );
                     }
                     else if constexpr (Matrix::Operations::BinaryMatrixOperatable<Operator>) {
-                        out_op = RegisteredOperation::create(op_code, 
-                                    out_tensor, 
+                        out_op = OperationFactory::create(
+                                    op_code, 
+                                    *out_tensor, 
                                     l->get_operation(),
                                     r->get_operation()
                             );
@@ -153,14 +155,16 @@ namespace NeuralNetwork {
                     
                         
                     if constexpr (Matrix::Operations::UnaryMatrixOperatable<Operator>) {
-                        out_op = RegisteredOperation::create(op_code, 
-                                    out_tensor, 
+                        out_op = OperationFactory::create(
+                                    op_code, 
+                                    *out_tensor, 
                                     l->get_operation()
                             );
                     }
                     else if constexpr (Matrix::Operations::BinaryMatrixOperatable<Operator>) {
-                        out_op = RegisteredOperation::create(op_code, 
-                                    out_tensor, 
+                        out_op = OperationFactory::create(
+                                    op_code, 
+                                    *out_tensor, 
                                     l->get_operation(),
                                     r->get_operation()
                             );

@@ -14,6 +14,8 @@ and then Tensor inherits from that class.
 Visitor Polymorphism depending on task,
 reading for creating graph, writing data back,
 ...
+transfer number: 7192 
+1-800-829-1040
 */
 
 namespace NeuralNetwork {
@@ -24,74 +26,51 @@ namespace NeuralNetwork {
 
             class Tensor;
 
-            class RegisteredOperation : std::enable_shared_from_this<RegisteredOperation> {
+            class RegisteredOperation { 
 
                 using cgNode   = std::shared_ptr<RegisteredOperation>; 
-                using T        = std::shared_ptr<Tensor>;
+                using T        = Tensor&;
                 using NodePair = std::pair<cgNode, cgNode>;
 
                 public:
+                    RegisteredOperation(Matrix::Operations::Code _typ, 
+                        T _res, cgNode _op = nullptr, 
+                        cgNode _op2 = nullptr) : 
+                        m_type(_typ), result(_res), 
+                        operand(_op), bin_operand(_op2) {}
 
-                    constexpr Matrix::Operations::Code get_operation_code(void) { return m_type; }
-                    T share_tensor () { return result; }
-
-                    static std::shared_ptr<RegisteredOperation> create(
-                            const Matrix::Operations::Code _typ, T _res, 
-                            cgNode _op = nullptr, cgNode _op2 = nullptr) {
-
-                            return std::shared_ptr<RegisteredOperation>(
-                                new RegisteredOperation(_typ, _res, _op, _op2)
-                                );
-                            
-                    }
-
-                    std::shared_ptr<RegisteredOperation> get_operation(void) {
-                        return shared_from_this();
-                    }
-
-
-                    NodePair get_operands(void) {
-
-                        if (operand && bin_operand) {
-                            return {
-                                    this->operand->get_operation(), 
-                                    this->bin_operand->get_operation()
-                            };
-                        }
-                        else if (operand) {
-                            return {
-                                    this->operand->get_operation(), 
-                                    nullptr
-                            };
-                        }
-                        else if (bin_operand) {
-                            return {
-                                    nullptr,
-                                    this->bin_operand->get_operation() 
-                            };
-                        }
-
-                        return {
-                                nullptr,
-                                nullptr 
-                        };
-
-
-                     }
+                    T share_tensor() const { return result; }
+                    const Matrix::Operations::Code get_code() const { return m_type; }
+                    NodePair get_operands(void) const;
                 
-                
-                protected:
+                private:
                     const Matrix::Operations::Code m_type;
                     T result;
                     cgNode operand;
                     cgNode bin_operand;
-                private:
-                    RegisteredOperation(const Matrix::Operations::Code _typ, T _res, 
-                        cgNode _op, cgNode _op2) : 
-                        m_type(_typ), result(_res), 
-                        operand(std::move(_op)), 
-                        bin_operand(std::move(_op2)) {}
                 
+            };
+
+
+            class OperationFactory {
+
+                using cgNode   = std::shared_ptr<RegisteredOperation>; 
+                using T        = Tensor&;
+                using NodePair = std::pair<cgNode, cgNode>;
+                
+                public:
+                    static std::shared_ptr<RegisteredOperation> create(
+                            const Matrix::Operations::Code _typ, T _res, 
+                            cgNode _op = nullptr, cgNode _op2 = nullptr) {
+
+                            return std::make_shared<RegisteredOperation>(
+                                    _typ, 
+                                    _res, 
+                                    _op, 
+                                    _op2
+                                );
+                            
+                    }
             };
 
          

@@ -93,7 +93,7 @@ namespace NeuralNetwork {
 
         public:
             BinaryOperationStep(Matrix::Rows _l, Matrix::Columns _w) : 
-                matrix(std::make_shared<Tensor>(_l, _w, Computation::Graph::IsTrackable(true), Computation::Graph::IsLeaf(false))) {}
+                matrix(std::make_shared<Tensor>(_l, _w, Computation::Graph::IsTrackable(true), Computation::Graph::IsLeaf(true))) {}
             std::shared_ptr<Tensor> doForward(std::shared_ptr<Tensor> input) { return Impl()._doForward(input);}
             std::shared_ptr<Tensor> releaseOperand() { return matrix; }
         protected:

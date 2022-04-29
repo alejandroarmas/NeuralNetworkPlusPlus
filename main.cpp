@@ -47,6 +47,9 @@ int main(void) {
 
     auto out = model.forward(ma);
 
+    out->backwards();
+
+
 
     return 0;
 }

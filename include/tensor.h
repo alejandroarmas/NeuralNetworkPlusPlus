@@ -84,6 +84,7 @@ namespace NeuralNetwork {
                         IsLeaf _f       = IsLeaf(true),
                         IsRecordable _r = IsRecordable(true));
 
+                    void backwards();
 
                     bool     is_tensor_leaf()   
                         { return is_leaf;           }
@@ -110,8 +111,6 @@ namespace NeuralNetwork {
                          return graph_node;       }
                          
                     std::optional<TensorStatistics> stats;
-                protected:
-                    void register_leaf_op(void);
                 private:
                     matrix_t matrix;
                     std::optional<matrix_t> grad;

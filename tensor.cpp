@@ -2,6 +2,7 @@
 #include "matrix.h"
 #include "generator.h"
 #include "m_algorithms_register.h"
+#include "tensor_backwards_pass.h"
 
 #include <memory>
 
@@ -18,13 +19,15 @@ namespace NeuralNetwork {
                 IsTrackable _t, IsLeaf _f, IsRecordable _r): 
                 stats({}),
                 matrix(Matrix::Representation(_l, _w)), 
-                grad({}), graph_node(nullptr), is_leaf(_f.get()),
+                grad({}), 
+                graph_node(
+                    OperationFactory::create(
+                        Matrix::Operations::Code::NOP, *this)), 
+                is_leaf(_f.get()),
                 requires_grad(_t.get()), record_statistics(_r.get()) {
 
                     Matrix::Generation::Normal<0, 1> normal_distribution_init;
                     matrix = normal_distribution_init(matrix);
-
-                if (is_leaf) this->register_leaf_op(); 
                         
                     
             }
@@ -34,21 +37,20 @@ namespace NeuralNetwork {
                 IsTrackable _t, IsLeaf _f, IsRecordable _r) : 
                 stats({}),
                 matrix(_m), grad({}), 
-                graph_node(nullptr), is_leaf(_f.get()), 
-                requires_grad(_t.get()), record_statistics(_r.get()){
-                    
-                if (is_leaf) this->register_leaf_op(); 
+                graph_node(
+                    OperationFactory::create(
+                        Matrix::Operations::Code::NOP, *this)), 
+                is_leaf(_f.get()), 
+                requires_grad(_t.get()), record_statistics(_r.get()) {}
+
+
+            void Tensor::backwards() {
+
+                ReversePass reverse;
+
+                reverse.backwards(*this, PrintTag{});
+
             }
-
-
-            void Tensor::register_leaf_op(void) {
-                        
-                auto op = RegisteredOperation::create(
-                    Matrix::Operations::Code::NOP, 
-                    std::shared_ptr<Tensor>(this)
-                    );
-                register_operation(op);
-            } 
 
 
         }

@@ -27,7 +27,7 @@ endif
 VPATH = shared
 
 MAIN = main.o
-OBJS = main.o matrix.o generator.o matrix_printer.o functions.o network_layer.o m_algorithms_concepts.o m_algorithms.o m_algorithms_utilities.o m_algorithms_register.o matrix_benchmark.o activation_functions.o tensor.o tensor_forward_wrapper.o
+OBJS = main.o matrix.o generator.o matrix_printer.o functions.o network_layer.o m_algorithms_concepts.o m_algorithms.o m_algorithms_utilities.o m_algorithms_register.o matrix_benchmark.o activation_functions.o tensor.o tensor_forward_wrapper.o tensor_backwards_pass.o
 OBJS_FOR_UNIT_TEST = $(foreach obj, $(OBJS), $(filter-out $(MAIN), $(wildcard *.o))) 
 
 
