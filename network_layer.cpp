@@ -14,11 +14,9 @@ namespace NeuralNetwork {
 
 
 
-    std::shared_ptr<Tensor> MatrixMultiplyStep::_doForward(std::shared_ptr<Tensor> input) {
+    std::shared_ptr<Tensor> MatrixMultiplyStep::_doForward(std::shared_ptr<Tensor> input) noexcept {
 
         TensorOp mm(Matrix::Operations::Binary::Multiplication::ParallelDNC{});
-
-
 
         auto out = mm(input, this->matrix);
 
@@ -33,13 +31,10 @@ namespace NeuralNetwork {
 
 
 
-    std::shared_ptr<Tensor> AddStep::_doForward(std::shared_ptr<Tensor> input) {
-
+    std::shared_ptr<Tensor> AddStep::_doForward(std::shared_ptr<Tensor> input) noexcept {
 
 
         TensorOp add(Matrix::Operations::Binary::Addition::Std{});
-
-
 
         auto z = add(this->matrix, input);
 
@@ -53,11 +48,7 @@ namespace NeuralNetwork {
     }
 
 
-    std::shared_ptr<Tensor> Layer::doForward(std::shared_ptr<Tensor> input) {
-
-        if (input == nullptr) {
-            throw std::invalid_argument("Matrix has no data (pointing to null).");
-        }
+    std::shared_ptr<Tensor> Layer::doForward(std::shared_ptr<Tensor> input) noexcept {
 
 
         auto out = this->weights->forward(input);
@@ -69,11 +60,8 @@ namespace NeuralNetwork {
     }
 
 
-    void Layer::_add(std::unique_ptr<StepInterface> matrix) {
+    void Layer::_add(std::unique_ptr<StepInterface> matrix) noexcept {
 
-        if (matrix == nullptr) {
-            throw std::invalid_argument("Matrix has no data (pointing to null).");
-        }
 
         if (this->weights == nullptr) {
             this->weights = std::move(matrix);
@@ -85,14 +73,14 @@ namespace NeuralNetwork {
     }
 
 
-    std::shared_ptr<Tensor> Sequential::doForward(std::shared_ptr<Tensor> input) {
+    std::shared_ptr<Tensor> Sequential::doForward(std::shared_ptr<Tensor> input) noexcept {
 
         std::shared_ptr<Tensor> current_value = input;
 
         std::for_each(this->_modules.begin(), this->_modules.end(), 
-            [&current_value](std::pair<const unsigned int, std::unique_ptr<StepInterface>>& _layer){
+            [&current_value](std::unique_ptr<StepInterface>& _layer){
 
-                current_value = _layer.second->forward(current_value);
+                current_value = _layer->forward(current_value);
             });
 
 
@@ -100,8 +88,8 @@ namespace NeuralNetwork {
     }
 
 
-    void Sequential::_add(std::unique_ptr<StepInterface> layer) {
-        this->_modules.emplace(this->last_key++, std::move(layer));
+    void Sequential::_add(std::unique_ptr<StepInterface> layer) noexcept {
+        this->_modules.emplace_back(std::move(layer));
     }
 
 }

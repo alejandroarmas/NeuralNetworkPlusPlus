@@ -2,25 +2,24 @@
 #define NETWORK_LAYER_H
 
 #include "tensor.h"
+#include "tensor_factory.h"
 #include "m_algorithms_utilities.h"
 
 #include <cstdint>
 #include <memory>
 #include <functional>
 #include <map>
+#include <vector>
 
 #include <iostream>
 
-#define FLAT 1
+
     
-template<typename T>
-const char* getClassName(T) {
-    return typeid(T).name();
-}
 
 
 namespace NeuralNetwork {
 
+    constexpr u_int8_t FLAT = 1;
 
 
     using namespace NeuralNetwork::Computation::Graph;
@@ -56,10 +55,9 @@ namespace NeuralNetwork {
     class ComputationalStep: public StepInterface {
 
         public:
-            std::shared_ptr<Tensor> forward(std::shared_ptr<Tensor> input) override { 
+            std::shared_ptr<Tensor> forward(std::shared_ptr<Tensor> input) noexcept override{ 
  
-
-                // TODO: print, or error checking.
+                assert(input != nullptr && "Tensor has no data (pointing to null).");
 
                 auto out = Impl().doForward(input); 
 
@@ -92,10 +90,9 @@ namespace NeuralNetwork {
     class BinaryOperationStep: public ComputationalStep<BinaryOperationStep<Operation>> {
 
         public:
-            BinaryOperationStep(Matrix::Rows _l, Matrix::Columns _w) : 
-                matrix(std::make_shared<Tensor>(_l, _w, Computation::Graph::IsTrackable(true), Computation::Graph::IsLeaf(true))) {}
-            std::shared_ptr<Tensor> doForward(std::shared_ptr<Tensor> input) { return Impl()._doForward(input);}
-            std::shared_ptr<Tensor> releaseOperand() { return matrix; }
+            BinaryOperationStep(Matrix::Rows _l, Matrix::Columns _w) noexcept : 
+                matrix(NeuralNetwork::Computation::Graph::TensorConstructor::create(_l, _w, Computation::Graph::IsTrackable(true), Computation::Graph::IsLeaf(true))) {}
+            std::shared_ptr<Tensor> doForward(std::shared_ptr<Tensor> input) noexcept { return Impl()._doForward(input);}
         protected:
             std::shared_ptr<Tensor> matrix;
         private:
@@ -108,9 +105,9 @@ namespace NeuralNetwork {
     class MatrixMultiplyStep: public BinaryOperationStep<MatrixMultiplyStep> {
 
         public:
-            MatrixMultiplyStep(Matrix::Rows _l, Matrix::Columns _w) : 
+            MatrixMultiplyStep(Matrix::Rows _l, Matrix::Columns _w) noexcept : 
                 BinaryOperationStep<MatrixMultiplyStep>(_l, _w) {}
-            std::shared_ptr<Tensor> _doForward(std::shared_ptr<Tensor> input);
+            std::shared_ptr<Tensor> _doForward(std::shared_ptr<Tensor> input) noexcept;
     };
     
     
@@ -124,9 +121,9 @@ namespace NeuralNetwork {
     class AddStep: public BinaryOperationStep<AddStep> {
 
         public:
-            AddStep(Matrix::Columns _w) : 
+            AddStep(Matrix::Columns _w) noexcept : 
                 BinaryOperationStep<AddStep>(Matrix::Rows(FLAT), _w) {}
-            std::shared_ptr<Tensor> _doForward(std::shared_ptr<Tensor> input);
+            std::shared_ptr<Tensor> _doForward(std::shared_ptr<Tensor> input) noexcept;
     };
 
     /*
@@ -138,13 +135,15 @@ namespace NeuralNetwork {
     class ComposedStep {
 
         public:
-            void add(std::unique_ptr<StepInterface> layer) {
+            void add(std::unique_ptr<StepInterface> layer) noexcept {
+
+                assert(layer != nullptr && "Layer has no data (pointing to null).");
+
                 Impl()._add(std::move(layer));
             }
         private:
             friend Implementation;
-            Implementation& Impl() { return *static_cast<Implementation*>(this); }
-            ComposedStep() = default;
+            Implementation& Impl() noexcept { return *static_cast<Implementation*>(this); }
     };
 
 
@@ -152,11 +151,11 @@ namespace NeuralNetwork {
 
         public:
             Layer(std::unique_ptr<StepInterface> _w, 
-                std::unique_ptr<StepInterface> _b) : 
+                std::unique_ptr<StepInterface> _b) noexcept : 
                 weights(std::move(_w)), bias(std::move(_b)) {}
                 
-            std::shared_ptr<Tensor> doForward(std::shared_ptr<Tensor> input);
-            void _add(std::unique_ptr<StepInterface> layer);
+            std::shared_ptr<Tensor> doForward(std::shared_ptr<Tensor> input) noexcept;
+            void _add(std::unique_ptr<StepInterface> layer) noexcept;
             
         private:
             std::unique_ptr<StepInterface> weights;
@@ -197,13 +196,10 @@ namespace NeuralNetwork {
     */
     class Sequential: public ComputationalStep<Sequential>, public ComposedStep<Sequential> {
         public:
-            Sequential() : last_key(0) {}
-            ~Sequential() = default;
-            std::shared_ptr<Tensor> doForward(std::shared_ptr<Tensor> input);
-            void _add(std::unique_ptr<StepInterface> layer);
+            std::shared_ptr<Tensor> doForward(std::shared_ptr<Tensor> input) noexcept;
+            void _add(std::unique_ptr<StepInterface> layer) noexcept;
         private:
-            std::map<const unsigned int, std::unique_ptr<StepInterface>> _modules;
-            unsigned int last_key;
+            std::vector<std::unique_ptr<StepInterface>> _modules;
 
     };
 
