@@ -3,6 +3,7 @@
 
 #include <cilk/cilk.h>
 #include <iostream>
+#include <math.h>
 
 
 namespace Matrix {
@@ -28,8 +29,56 @@ namespace Matrix {
                 return output;
             }
 
-        }
 
+            Matrix::Representation SoftMax::operate(
+                        const Matrix::Representation& m) const{
+
+                
+                Matrix::Representation output = Matrix::Representation(
+                            Matrix::Rows(m.num_rows()), 
+                            Matrix::Columns(m.num_cols())
+                    );
+
+                auto max = std::max(m.constScanStart(), m.constScanEnd());
+
+                std::transform(m.constScanStart(), m.constScanEnd(), output.scanStart(), [max](const auto val) { return val - *max; }); 
+                std::transform(output.constScanStart(), output.constScanEnd(), output.scanStart(), [](const auto val) { return exp(val);}); 
+
+
+
+                return output;
+            }
+
+
+
+        } // Unary
+
+        namespace Metric {
+
+
+            Matrix::Representation CrossEntropy::operate(
+                        const Matrix::Representation& p, 
+                        const Matrix::Representation& q) const {
+                
+                Matrix::Representation output = Matrix::Representation(
+                            Matrix::Rows(1), 
+                            Matrix::Columns(1)
+                    );
+
+                
+                float entropy = 0;
+
+                for (auto p_i = p.constScanStart(), q_i = q.constScanStart(); q_i != q.constScanEnd(); p_i++, q_i++) {
+                    entropy += *p_i * log(*q_i);
+                }
+
+
+                output.put(0, 0, entropy);
+
+                return output;
+            }
+
+        }
 
 
         namespace Binary {
@@ -49,6 +98,24 @@ namespace Matrix {
                     auto output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
 
                     std::transform(l.constScanStart(), l.constScanEnd(), r.constScanStart(), output.scanStart(), std::plus<float>());
+
+                    return output;
+                }
+            }
+
+            namespace Subtraction {
+
+                Matrix::Representation Std::operate(
+                        const Matrix::Representation& l, 
+                        const Matrix::Representation& r) const {
+
+                    if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols())) {
+                        throw std::length_error(Utility::debug_message_2(l, r));
+                    }
+                        
+                    auto output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
+
+                    std::transform(l.constScanStart(), l.constScanEnd(), r.constScanStart(), output.scanStart(), std::minus<float>());
 
                     return output;
                 }
