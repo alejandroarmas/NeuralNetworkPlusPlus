@@ -1,15 +1,20 @@
 #ifndef TENSOR_DEFINITION_H
 #define TENSOR_DEFINITION_H
 
+#include "computational_graph_map.h"
+#include "strong_types.h"
 
 #include "matrix.h"
 #include "m_algorithms.h"
 #include "m_algorithms_register.h"
 #include "m_algorithms_concepts.h"
+#include "function_object_iterator.h"
+
 
 #include <chrono>
 #include <optional>
 #include <memory>
+#include <stack>
 
 namespace NeuralNetwork {
 
@@ -17,25 +22,12 @@ namespace NeuralNetwork {
 
         namespace Graph {
 
-            using IsTrackable  = 
-                Matrix::NamedType<bool, struct TrackParameter>;
-
-
-            using IsLeaf       = 
-                Matrix::NamedType<bool, struct LeafParameter>;
-
-
-            using IsRecordable = 
-                Matrix::NamedType<bool, struct RecordParameter>;
-
-
-            class RegisteredOperation;
-
 
             class TensorStatistics {
                 
 
                 using time_t = std::chrono::steady_clock::time_point;
+
 
                 public:
 
@@ -72,6 +64,7 @@ namespace NeuralNetwork {
             class Tensor {
 
                 using matrix_t = Matrix::Representation;
+                using iterator = LevelOrderIterator; 
 
                 public:
                     Tensor(Matrix::Rows _l, Matrix::Columns _w, 
@@ -84,37 +77,41 @@ namespace NeuralNetwork {
                         IsLeaf _f       = IsLeaf(true),
                         IsRecordable _r = IsRecordable(true));
 
+                    friend class TensorConstructor;
+                    
                     void backwards();
 
-                    bool     is_tensor_leaf()   
-                        { return is_leaf;           }
+                    bool is_requires_grad() const;
+                    bool is_tensor_leaf() const;
+                    bool is_recorded() const;
 
-                    bool     is_requires_grad()
-                        { return requires_grad; }
+                    void become_parent();
 
-                    bool     is_recorded()      
-                        { return record_statistics; }
+                    matrix_t release_matrix();
+                    matrix_t get_grad();
 
-                    matrix_t release_matrix()   
-                        { return matrix; }
+                    Matrix::Rows num_rows(void) const;
+                    Matrix::Columns num_cols(void) const;
 
-                    matrix_t release_grad()     
-                        { return grad.value_or(Matrix::Representation()); }
-                    
-                    void     register_operation(
-                        const std::shared_ptr<
-                        RegisteredOperation> _node) { 
-                            graph_node = _node;   }
-
-                    std::shared_ptr<RegisteredOperation> 
-                        get_operation() {
-                         return graph_node;       }
-                         
                     std::optional<TensorStatistics> stats;
+
+                    FunctionObject get_operation();
+                    TensorID get_tensor_id() const { return my_tensor_id; }
+                    void detatch_from_computational_graph();
+
+                    iterator begin() {
+                        return iterator{my_tensor_id}; 
+                    }
+
+                    iterator end() {
+                        return iterator{TensorID(0)}; 
+                    }
+
                 private:
+                    ComputationalGraphMap& map;
                     matrix_t matrix;
                     std::optional<matrix_t> grad;
-                    std::shared_ptr<RegisteredOperation> graph_node;
+                    TensorID my_tensor_id;
                     bool is_leaf;
                     bool requires_grad;
                     bool record_statistics;
