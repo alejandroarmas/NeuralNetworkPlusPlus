@@ -56,33 +56,6 @@ namespace NeuralNetwork {
             };
 
 
-            class ComputeTag;
-            class RecordTag;
-
-
-            class PerformTensorStrategy {
-
-                public:
-                    PerformTensorStrategy() = default;
-
-                    template <Matrix::Operations::MatrixOperatable Operator>
-                    std::shared_ptr<Tensor> compute(
-                        Operator _op, 
-                        const std::shared_ptr<Tensor> l,
-                        const std::shared_ptr<Tensor> r, 
-                        ComputeTag _);
-
-                    template <Matrix::Operations::MatrixOperatable Operator>
-                    std::shared_ptr<Tensor> compute(
-                        Operator _op, 
-                        const std::shared_ptr<Tensor> l,
-                        const std::shared_ptr<Tensor> r, 
-                        RecordTag _);
-
-            };
-            
-
-            
             /*
 
             DESCRIPTION:
@@ -100,29 +73,56 @@ namespace NeuralNetwork {
                   }
 
             */
-            template <class StrategyType>
-            struct StrategyTag {
-
-                template <Matrix::Operations::MatrixOperatable Operator>
-                std::shared_ptr<Tensor> compute_tensor(
-                    Operator _op,
-                    const std::shared_ptr<Tensor> l, 
-                    const std::shared_ptr<Tensor> r,
-                    PerformTensorStrategy& strat_implementation) {
-                        
-                    return strat_implementation.compute(
-                        _op, l, r, *static_cast<
-                        StrategyType const*>(this));
-            } };
-
-            class ComputeTag : public StrategyTag<ComputeTag> {
+            class PerformTensorStrategy {
+            
                 public:
-                    ComputeTag() = default;
+                    template <class StrategyType>
+                    struct StrategyTag {
+
+                        template <Matrix::Operations::MatrixOperatable Operator>
+                        std::shared_ptr<Tensor> compute_tensor(
+                            Operator _op,
+                            const std::shared_ptr<Tensor> l, 
+                            const std::shared_ptr<Tensor> r,
+                            PerformTensorStrategy& strat_implementation) {
+                                
+                            return strat_implementation.compute(
+                                _op, l, r, *static_cast<
+                                StrategyType const*>(this));
+                    } };
+
+                    class ComputeTag : public StrategyTag<ComputeTag> {
+                        public:
+                            ComputeTag() = default;
+                    };
+                    class RecordTag : public StrategyTag<RecordTag> {
+                        public:
+                            RecordTag() = default;
+                    };
+
+                    PerformTensorStrategy() : 
+                        map(ComputationalGraphMap::get()) {}
+
+                    template <Matrix::Operations::MatrixOperatable Operator>
+                    std::shared_ptr<Tensor> compute(
+                        Operator _op, 
+                        const std::shared_ptr<Tensor> l,
+                        const std::shared_ptr<Tensor> r, 
+                        ComputeTag _);
+
+                    template <Matrix::Operations::MatrixOperatable Operator>
+                    std::shared_ptr<Tensor> compute(
+                        Operator _op, 
+                        const std::shared_ptr<Tensor> l,
+                        const std::shared_ptr<Tensor> r, 
+                        RecordTag _);
+                private:
+                    ComputationalGraphMap& map;
+
             };
-            class RecordTag : public StrategyTag<RecordTag> {
-                public:
-                    RecordTag() = default;
-            };
+            
+
+            
 
 
 
@@ -134,4 +134,4 @@ namespace NeuralNetwork {
 }
 
 
-#endif // TENSOR_FORWARD_WRAPPER
+#endif // TENSOR_FORWARD_WRAPPER    

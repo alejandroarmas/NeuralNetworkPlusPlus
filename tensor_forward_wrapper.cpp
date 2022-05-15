@@ -1,12 +1,15 @@
 
 #include "tensor_forward_wrapper.h"
 #include "tensor.h"
+#include "tensor_factory.h"
 
 #include "matrix.h"
 #include "generator.h"
 #include "m_algorithms.h"
 #include "m_algorithms_register.h"
 #include "m_algorithms_utilities.h"
+
+#include "strong_types.h"
 
 #include <chrono>
 #include <concepts>
@@ -34,25 +37,30 @@ namespace NeuralNetwork {
 
                     if (recordTensorOperation) {
                         
-                        RecordTag _;
+                        PerformTensorStrategy::RecordTag _;
 
                         return _.compute_tensor(op_type, l, r, implementation);
                     }
                     
-                    ComputeTag _;
+                    PerformTensorStrategy::ComputeTag _;
 
-                    return _.compute_tensor(op_type, l, nullptr, implementation);
+                    return _.compute_tensor(op_type, l, r, implementation);
                 
                 }
 
+            /*
+                templates explicit instantiation
+            */
 
             template class TensorOp<Matrix::Operations::Unary::ReLU>;
+            template class TensorOp<Matrix::Operations::Unary::SoftMax>;
             template class TensorOp<Matrix::Operations::Binary::HadamardProduct::Std>;
             template class TensorOp<Matrix::Operations::Binary::Multiplication::ParallelDNC>;
             template class TensorOp<Matrix::Operations::Binary::Multiplication::Naive>;
             template class TensorOp<Matrix::Operations::Binary::Multiplication::Square>;
             template class TensorOp<Matrix::Operations::Binary::Addition::Std>;
             template class TensorOp<Matrix::Operations::Binary::OuterProduct::Naive>;
+            template class TensorOp<Matrix::Operations::Metric::CrossEntropy>;
 
 
 
@@ -65,46 +73,46 @@ namespace NeuralNetwork {
 
                         
                     Matrix::Representation out_matrix;
-                    std::shared_ptr<Tensor> out_tensor;
-                    std::shared_ptr<RegisteredOperation> out_op;
-
-                    Matrix::Operations::Utility::Codify codify;
-                    auto op_code = codify(_op); 
+                    std::shared_ptr<Tensor> out_tensor;                    
 
 
                     if constexpr (Matrix::Operations::UnaryMatrixOperatable<Operator>) {
-                        out_matrix = _op(l->release_matrix());
+                        out_matrix = _op(
+                            l->release_matrix());
                     }
                     else if constexpr (Matrix::Operations::BinaryMatrixOperatable<Operator>) {
                         out_matrix = _op(
-                                    l->release_matrix(),
-                                    r->release_matrix()
-                                );
+                            l->release_matrix(),
+                            r->release_matrix()
+                        );
                     }
-
-
-                    out_tensor = std::make_shared<Tensor>
-                        (std::move(out_matrix), IsTrackable(true), 
-                        IsLeaf(false), IsRecordable(false));
-                    
 
                     if constexpr (Matrix::Operations::UnaryMatrixOperatable<Operator>) {
-                        out_op = OperationFactory::create(
-                                    op_code, 
-                                    *out_tensor, 
-                                    l->get_operation()
-                            );
+
+                        out_tensor = TensorConstructor::create(_op,
+                            std::move(out_matrix),  
+                            l->get_tensor_id(),
+                            TensorID(0),
+                            IsTrackable(true),
+                            IsLeaf(true), 
+                            IsRecordable(false));
+                        l->become_parent();
                     }
                     else if constexpr (Matrix::Operations::BinaryMatrixOperatable<Operator>) {
-                        out_op = OperationFactory::create(
-                                    op_code, 
-                                    *out_tensor, 
-                                    l->get_operation(),
-                                    r->get_operation()
-                            );
-                    }
+                        
+                        out_tensor = TensorConstructor::create(_op,
+                            std::move(out_matrix),  
+                            l->get_tensor_id(),
+                            r->get_tensor_id(),
+                            IsTrackable(true),
+                            IsLeaf(true), 
+                            IsRecordable(false));
+                        
+                        l->become_parent();
+                        r->become_parent();
+                        
+                       }
 
-                    out_tensor->register_operation(out_op);
 
                     return out_tensor;
 
@@ -125,13 +133,9 @@ namespace NeuralNetwork {
                     Matrix::Operations::Utility::Stringify stringify;
                     _s.set_operation_string(stringify(_op));
 
-                    Matrix::Operations::Utility::Codify codify;
-                    Matrix::Operations::Code op_code = codify(_op); 
-
                     Matrix::Representation out_matrix;
                     std::shared_ptr<Tensor> out_tensor;
-                    std::shared_ptr<RegisteredOperation> out_op;
-
+                    
 
                     _s.set_matrix_start(std::chrono::steady_clock::now());
 
@@ -147,31 +151,32 @@ namespace NeuralNetwork {
                     }
 
                     _s.set_matrix_end(std::chrono::steady_clock::now());
-                        
-                    
-                    out_tensor = std::make_shared<Tensor>(
-                            std::move(out_matrix), IsTrackable(true), 
-                            IsLeaf(false), IsRecordable(true));
-                    
+                                            
                         
                     if constexpr (Matrix::Operations::UnaryMatrixOperatable<Operator>) {
-                        out_op = OperationFactory::create(
-                                    op_code, 
-                                    *out_tensor, 
-                                    l->get_operation()
-                            );
+                    
+                        out_tensor = TensorConstructor::create(_op,
+                                std::move(out_matrix),  
+                                l->get_tensor_id(),
+                                TensorID(0),
+                                IsTrackable(true),
+                                IsLeaf(true), 
+                                IsRecordable(true));
+                        l->become_parent();
+
                     }
                     else if constexpr (Matrix::Operations::BinaryMatrixOperatable<Operator>) {
-                        out_op = OperationFactory::create(
-                                    op_code, 
-                                    *out_tensor, 
-                                    l->get_operation(),
-                                    r->get_operation()
-                            );
+                        
+                        out_tensor = TensorConstructor::create(_op,
+                                std::move(out_matrix),  
+                                l->get_tensor_id(),
+                                r->get_tensor_id(),
+                                IsTrackable(true),
+                                IsLeaf(true), 
+                                IsRecordable(true));
+                        l->become_parent();
+                        r->become_parent();
                     }
-
-
-                    out_tensor->register_operation(out_op);
 
                     _s.set_graph_end(std::chrono::steady_clock::now());
                     out_tensor->stats = _s;
