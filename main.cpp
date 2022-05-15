@@ -1,35 +1,26 @@
 #include <memory>
 #include <iostream>
 
-#include "matrix.h"
+#include "tensor_forward_wrapper.h"
 #include "generator.h"
 #include "matrix_printer.h"
 #include "network_layer.h"
-#include "activation_functions.h"
+#include "activation_layer.h"
 #include "m_algorithms.h"
 #include "matrix_benchmark.h"
 #include "context_object.h"
+#include "function_object.h"
 
 
-/*
-
-model = nn.Sequential(
-    nn.Linear(28*28, 512),
-    nn.ReLU(),
-    nn.Linear(512, 512),
-    nn.ReLU(),
-    nn.Linear(512, 10),
-)
-
-X = torch.rand(1, 28, 28, device=device)
-logits = model(X)
-pred_probab = nn.Softmax(dim=1)(logits)
-
-*/
 
 int main(void) {
 
-    auto ma = std::make_shared<NeuralNetwork::Computation::Graph::Tensor>(Matrix::Rows(1), Matrix::Columns(2000));
+
+    auto ma = NeuralNetwork::Computation::Graph::TensorConstructor::create(Matrix::Rows(1), Matrix::Columns(2000));
+    auto ground_truth = NeuralNetwork::Computation::Graph::TensorConstructor::create(Matrix::Rows(1), Matrix::Columns(10), 
+        NeuralNetwork::Computation::Graph::IsTrackable(true), 
+        NeuralNetwork::Computation::Graph::IsLeaf(true), 
+        NeuralNetwork::Computation::Graph::IsRecordable(true));
 
     NeuralNetwork::Sequential model;
 
@@ -42,12 +33,17 @@ int main(void) {
             std::make_unique<NeuralNetwork::MatrixMultiplyStep>(Matrix::Rows(1000), Matrix::Columns(10)),
             std::make_unique<NeuralNetwork::AddStep>(Matrix::Columns(10))    
     ));
-    model.add(std::make_unique<NeuralNetwork::ActivationFunctions::ReLU>());
+    model.add(std::make_unique<NeuralNetwork::ActivationFunctions::SoftMax>());
     
+    auto CE = NeuralNetwork::Computation::Graph::TensorOp(Matrix::Operations::Metric::CrossEntropy{});
 
-    auto out = model.forward(ma);
+    for (int i = 0; i < 10; i++) {
+        auto out  = model.forward(ma);
+        auto loss = CE(out, ground_truth);
+        loss->backwards();
+    }
 
-    out->backwards();
+
 
 
 
