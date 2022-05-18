@@ -41,50 +41,62 @@ namespace Matrix {
                     */
                     struct Stringify {
                             constexpr std::string_view operator()(
-                                const Unary::ReLU& _) { 
+                                const Unary::ReLU&) { 
                                     return "ReLU"; }
                             constexpr std::string_view operator()(
-                                const Binary::HadamardProduct::Std& _) { 
+                                const Unary::SoftMax&) { 
+                                    return "Softmax"; }
+                            constexpr std::string_view operator()(
+                                const Binary::HadamardProduct::Std&) { 
                                     return "HadamardProduct"; }
                             constexpr std::string_view operator()(
-                                const Binary::Multiplication::ParallelDNC& _) { 
+                                const Binary::Multiplication::ParallelDNC&) { 
                                     return "MatrixMultiply"; }
                             constexpr std::string_view operator()(
-                                const Binary::Multiplication::Naive& _) { 
+                                const Binary::Multiplication::Naive&) { 
                                     return "MatrixMultiply"; }
                             constexpr std::string_view operator()(
-                                const Binary::Multiplication::Square& _) { 
+                                const Binary::Multiplication::Square&) { 
                                     return "MatrixMultiply"; }
                             constexpr std::string_view operator()(
-                                const Binary::Addition::Std& _) { 
+                                const Binary::Addition::Std&) { 
                                     return "Addition"; }
                             constexpr std::string_view operator()(
-                                const Binary::OuterProduct::Naive& _) { 
+                                const Binary::OuterProduct::Naive&) { 
                                     return "OuterProduct"; }
+                            constexpr std::string_view operator()(
+                                const Metric::CrossEntropy&) { 
+                                    return "CrossEntropy"; }
                     };
 
                     struct Codify {
                             constexpr Code operator()(
-                                const Unary::ReLU& _)                         
+                                const Unary::ReLU&)                         
                                 { return Code::ReLU; }
                             constexpr Code operator()(
-                                const Binary::HadamardProduct::Std& _)        
+                                const Unary::SoftMax&)                         
+                                { return Code::SoftMax; }
+                            constexpr Code operator()(
+                                const Binary::HadamardProduct::Std&)        
                                 { return Code::HADAMARD; }
                             constexpr Code operator()(
-                                const Binary::Multiplication::ParallelDNC& _) 
+                                const Binary::Multiplication::ParallelDNC&) 
                                 { return Code::MULTIPLY; }
                             constexpr Code operator()(
-                                const Binary::Multiplication::Naive& _)       
+                                const Binary::Multiplication::Naive&)       
                                 { return Code::MULTIPLY; }
                             constexpr Code operator()(
-                                const Binary::Multiplication::Square& _)      
+                                const Binary::Multiplication::Square&)      
                                 { return Code::MULTIPLY; }
                             constexpr Code operator()(
-                                const Binary::Addition::Std& _)               
+                                const Binary::Addition::Std&)               
                                 { return Code::PLUS; }
                             constexpr Code operator()(
-                                const Binary::OuterProduct::Naive& _)         
+                                const Binary::OuterProduct::Naive&)         
                                 { return Code::OUTER_PRODUCT; }
+                            constexpr Code operator()(
+                                const Metric::CrossEntropy&) { 
+                                    return Code::CROSS_ENTROPY; }
                     };
 
 
