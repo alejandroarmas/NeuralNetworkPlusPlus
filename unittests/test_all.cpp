@@ -1,5 +1,13 @@
-#define CATCH_CONFIG_MAIN
-#include "../deps/catch.hpp"
+// #define CATCH_CONFIG_MAIN
+// #include "../deps/catch.hpp"
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "../deps/doctest.h"
+
+TEST_CASE("Example") {
+     auto name = "Bob";
+     REQUIRE(name == "Bob");
+}
 
 /*
 Entry point for `run_unit_tests` Executable.

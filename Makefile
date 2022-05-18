@@ -39,6 +39,11 @@ UNIT_TESTING_MAIN_OBJ = $(addprefix ./unittests/obj/, $(notdir $(UNIT_TESTING_MA
 -include $(OBJS:.o=.d)
 
 
+%.o: %.cpp
+	$(CC) $(CPPFLAGS) -c $< -o $@
+
+%.o: %.c
+	$(CC) $(CPPFLAGS) -c $< -o $@
 
 matrix_multiply: $(OBJS)
 	$(CC) -o $@ $(CPPFLAGS) $(OBJS) $(LDFLAGS)
@@ -46,25 +51,12 @@ matrix_multiply: $(OBJS)
 ./unittests/obj/test_all.o: $(UNIT_TESTING_MAIN) 
 	$(CC) -c $(CPPFLAGS) $(INCLUDE) -o $@ $<
 
-run_unit_tests: $(UNIT_TESTING_MAIN_OBJ) $(UNIT_TESTS_CPP) $(DEPS_OBJS_FOR_UNIT_TESTING) $(OBJS_FOR_UNIT_TEST)    
-	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
+# ./unittests/obj/%.o: ./unittests/%.cpp
+# 	$(CC) $(CPPFLAGS) -c $< -o $@
 
+run_unit_tests: $(UNIT_TESTING_MAIN_OBJ) $(UNIT_TESTS_CPP) $(OBJS_FOR_UNIT_TEST)    
+	$(CC) $(CPPFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
-%.d: %.c
-	@set -e; gcc -MM $(CPPFLAGS) $< \
-		| sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@;
-	@[ -s $@ ] || rm -f $@
-
-%.d: %.cpp
-	@set -e; $(CC) -MM $(CPPFLAGS) $< \
-		| sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@;
-	@[ -s $@ ] || rm -f $@
-
-%.o: %.cpp
-	$(CC) $(CPPFLAGS) -c $< -o $@
-
-%.o: %.c
-	gcc $(CPPFLAGS) -c $< -o $@
 
 clean:
 	rm -f matrix_multiply *.o *~ core.* *.d run_unit_tests unittests/obj/*.o

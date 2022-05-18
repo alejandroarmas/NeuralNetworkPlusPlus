@@ -1,34 +1,34 @@
-#include "../deps/catch.hpp"
+#include "../deps/doctest.h"
 
 #include "../include/matrix.h"
 #include "../include/generator.h"
 #include "../include/m_algorithms.h"
 
 
-TEST_CASE("Matrix Addition", "[arithmetic]")
+TEST_CASE("Matrix Addition")
 {
     using matrix_t = Matrix::Representation; 
 
-    std::unique_ptr<matrix_t> matrix_with_ones = std::make_unique<matrix_t>(Matrix::Rows(20), Matrix::Columns(100));
-    std::unique_ptr<matrix_t> test_output = std::make_unique<matrix_t>(Matrix::Rows(20), Matrix::Columns(100));
+    matrix_t matrix_with_ones = matrix_t(Matrix::Rows(20), Matrix::Columns(100));
+    matrix_t test_output      = matrix_t(Matrix::Rows(20), Matrix::Columns(100));
     
 
     Matrix::Generation::Tester<1> init_as_one;
     Matrix::Generation::Tester<2> init_as_two;
     
-    matrix_with_ones = init_as_one(std::move(matrix_with_ones));
-    test_output = init_as_two(std::move(test_output));
+    matrix_with_ones = init_as_one(matrix_with_ones);
+    test_output = init_as_two(test_output);
 
 
     Matrix::Operations::Binary::Addition::Std naive_add;
 
-    std::unique_ptr<Matrix::Representation> sum = naive_add(std::move(matrix_with_ones), std::move(matrix_with_ones));
+    matrix_t sum = naive_add(matrix_with_ones, matrix_with_ones);
 
 
-    SECTION("Cilk-for Multiplication")
+    SUBCASE("Cilk-for Multiplication")
     {
 
-        REQUIRE((*sum == *test_output) == true);
+        CHECK((sum == test_output) == true);
     }
 
 }
