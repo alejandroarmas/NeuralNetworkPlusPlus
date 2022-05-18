@@ -28,7 +28,7 @@ namespace Matrix {
                 end   = std::chrono::steady_clock::now();
 
                 
-                return mc;
+                return Matrix::Representation{mc};
             }
 
     

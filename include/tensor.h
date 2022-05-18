@@ -67,50 +67,54 @@ namespace NeuralNetwork {
                 using iterator = LevelOrderIterator; 
 
                 public:
-                    Tensor(Matrix::Rows _l, Matrix::Columns _w, 
+                    ~Tensor() noexcept {}
+                    explicit Tensor(Matrix::Rows _l, Matrix::Columns _w, 
                         IsTrackable _t  = IsTrackable(true), 
                         IsLeaf _f       = IsLeaf(true),
-                        IsRecordable _r = IsRecordable(true));
+                        IsRecordable _r = IsRecordable(true)) noexcept;
                                                             
-                    Tensor(const Matrix::Representation& _m, 
+                    explicit Tensor(const Matrix::Representation& _m, 
                         IsTrackable _t  = IsTrackable(true), 
                         IsLeaf _f       = IsLeaf(true),
-                        IsRecordable _r = IsRecordable(true));
+                        IsRecordable _r = IsRecordable(true)) noexcept;
+
+                    explicit Tensor(const Tensor& other) noexcept;
+
+                    Tensor& operator=(const Tensor& other) noexcept;
 
                     friend class TensorConstructor;
                     
-                    void backwards();
+                    void backwards() noexcept;
 
-                    bool is_requires_grad() const;
-                    bool is_tensor_leaf() const;
-                    bool is_recorded() const;
+                    bool is_requires_grad() const noexcept;
+                    bool is_tensor_leaf() const noexcept;
+                    bool is_recorded() const noexcept;
 
-                    void become_parent();
+                    void become_parent() noexcept;
 
-                    matrix_t release_matrix();
-                    matrix_t get_grad();
+                    matrix_t& release_matrix() noexcept;
+                    // matrix_t get_grad();
 
-                    Matrix::Rows num_rows(void) const;
-                    Matrix::Columns num_cols(void) const;
+                    Matrix::Rows num_rows(void) const noexcept;
+                    Matrix::Columns num_cols(void) const noexcept;
 
                     std::optional<TensorStatistics> stats;
 
-                    FunctionObject get_operation();
-                    TensorID get_tensor_id() const { return my_tensor_id; }
-                    void detatch_from_computational_graph();
+                    FunctionObject get_operation() noexcept;
+                    TensorID get_tensor_id() const noexcept { return my_tensor_id; }
+                    void detatch_from_computational_graph() noexcept;
 
-                    iterator begin() {
+                    iterator begin() noexcept {
                         return iterator{my_tensor_id}; 
                     }
 
-                    iterator end() {
+                    iterator end() noexcept {
                         return iterator{TensorID(0)}; 
                     }
 
                 private:
-                    ComputationalGraphMap& map;
                     matrix_t matrix;
-                    std::optional<matrix_t> grad;
+                    // std::optional<matrix_t> grad;
                     TensorID my_tensor_id;
                     bool is_leaf;
                     bool requires_grad;

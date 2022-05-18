@@ -32,14 +32,14 @@ TEST_CASE("Matrix Multiplication")
     SUBCASE("Cilk-for Multiplication")
     {
 
-        CHECK((mc == md) == true);
+        CHECK((Matrix::Representation{mc} == Matrix::Representation{md}) == true);
     }
 
 
 
     SUBCASE("Recursive Parallel Multiplication")
     {
-        CHECK((mc == me) == true);
+        CHECK((Matrix::Representation{mc} == Matrix::Representation{me}) == true);
     }
 
 }

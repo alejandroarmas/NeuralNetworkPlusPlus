@@ -20,7 +20,7 @@ Matrix::Representation Matrix::Generation::Normal<Mean, Variance>::operator() (M
 
     std::transform(m.scanStart(), m.scanEnd(), m.scanStart(), [&gen, &d](const auto _){ return DAMPEN * d(gen); });
 
-    return m;
+    return Matrix::Representation{m};
 }
 
 
@@ -29,7 +29,7 @@ Matrix::Representation Matrix::Generation::Tester<Val>::operator() (Matrix::Repr
  
     std::transform(m.scanStart(), m.scanEnd(), m.scanStart(), [](auto _){ return Val; });
 
-    return m;
+    return Matrix::Representation{m};
 }
 
 

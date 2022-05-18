@@ -27,11 +27,11 @@ TEST_CASE("Matrix Equality Test")
     SUBCASE("Normal Cases")
     {
 
-        CHECK((ma == ma) == true);
-        CHECK((mb == mb) == true);
-        CHECK((ma != mb) == true);
-        CHECK((ma != mb) == !(ma == mb));
-        CHECK((mc == md) == true);
+        CHECK((matrix_t{ma} == matrix_t{ma}) == true);
+        CHECK((matrix_t{mb} == matrix_t{mb}) == true);
+        CHECK((matrix_t{ma} != matrix_t{mb}) == true);
+        CHECK((matrix_t{ma} != matrix_t{mb}) == !(matrix_t{ma} == matrix_t{mb}));
+        CHECK((matrix_t{mc} == matrix_t{md}) == true);
     }
 
 }

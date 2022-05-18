@@ -17,12 +17,12 @@ namespace NeuralNetwork {
 
         namespace Graph {
 
+
             Tensor::Tensor(Matrix::Rows _l, Matrix::Columns _w, 
-                    IsTrackable _t, IsLeaf _f, IsRecordable _r): 
+                    IsTrackable _t, IsLeaf _f, IsRecordable _r) noexcept: 
                     stats({}),
-                    map(ComputationalGraphMap::get()),
                     matrix(Matrix::Representation(_l, _w)), 
-                    grad({}), 
+                    // grad({}), 
                     my_tensor_id(ComputationalGraphMap::get()._obtain_tensor_id()),  
                     is_leaf(_f.get()),
                     requires_grad(_t.get()), record_statistics(_r.get()) {
@@ -34,66 +34,86 @@ namespace NeuralNetwork {
 
 
             Tensor::Tensor(const Matrix::Representation& _m, 
-                    IsTrackable _t, IsLeaf _f, IsRecordable _r) : 
+                    IsTrackable _t, IsLeaf _f, IsRecordable _r) noexcept: 
                     stats({}),
-                    map(ComputationalGraphMap::get()),
-                    matrix(_m), grad({}), 
+                    matrix(_m), 
+                    // grad({}), 
                     my_tensor_id(ComputationalGraphMap::get()._obtain_tensor_id()),  
                     is_leaf(_f.get()), 
                     requires_grad(_t.get()), record_statistics(_r.get()) {
 
             }
 
+            Tensor::Tensor(const Tensor& other) noexcept: 
+                    // stats(other.stats),
+                    matrix(other.matrix), 
+                    // grad(other.grad), 
+                    my_tensor_id(other.my_tensor_id),  
+                    is_leaf(other.is_leaf),
+                    requires_grad(other.requires_grad), 
+                    record_statistics(other.record_statistics) {}
 
-            void Tensor::detatch_from_computational_graph() {
+
+            Tensor& Tensor::operator=(const Tensor& other) noexcept {
+                my_tensor_id  = other.my_tensor_id;  
+                is_leaf       = other.is_leaf; 
+                requires_grad = other.requires_grad;
+                // stats = other.stats;
+                matrix        = other.matrix; 
+                // grad = other.grad; 
+                return *this;
+            }
+
+
+            void Tensor::detatch_from_computational_graph() noexcept {
                 // Matrix::Operations::Utility::Stringify stringify;
                 // auto fn = Matrix::Operations::Utility::Function::from(get_operation().get_code());
 
                 // std::cout << "Freeing " << this << " Registry: O[" << my_tensor_id.get() << "] = " << std::visit(stringify, fn) << std::endl;
                 
-                map._recover_tensor_id(my_tensor_id);
+                ComputationalGraphMap::get()._recover_tensor_id(my_tensor_id);
             }
 
 
-            FunctionObject Tensor::get_operation() { 
-                return map._get_operation(my_tensor_id);
+            FunctionObject Tensor::get_operation() noexcept { 
+                return ComputationalGraphMap::get()._get_operation(my_tensor_id);
             }
 
 
-            bool Tensor::is_tensor_leaf() const {   
+            bool Tensor::is_tensor_leaf() const noexcept {   
                 return is_leaf;  
             }
 
-            void Tensor::become_parent() {   
+            void Tensor::become_parent() noexcept {   
                 is_leaf = false; 
             }
 
-            bool Tensor::is_requires_grad() const {   
+            bool Tensor::is_requires_grad() const noexcept {   
                 return requires_grad; 
             }
 
-            bool Tensor::is_recorded() const {   
+            bool Tensor::is_recorded() const noexcept {   
                 return record_statistics; 
             }
 
 
-            Tensor::matrix_t Tensor::release_matrix() {   
+            Tensor::matrix_t& Tensor::release_matrix() noexcept {   
                 return matrix; 
             }
 
-            Tensor::matrix_t Tensor::get_grad(){   
-                return grad.value_or(Matrix::Representation()); 
-            }
+            // Tensor::matrix_t Tensor::get_grad(){   
+            //     return grad.value_or(Matrix::Representation()); 
+            // }
             
-            Matrix::Rows Tensor::num_rows(void) const {
+            Matrix::Rows Tensor::num_rows(void) const noexcept {
                 return Matrix::Rows(matrix.num_rows());
             }
 
-            Matrix::Columns Tensor::num_cols(void) const {
+            Matrix::Columns Tensor::num_cols(void) const noexcept {
                 return Matrix::Columns(matrix.num_cols());
             }
 
-            void Tensor::backwards() {
+            void Tensor::backwards() noexcept {
 
                 ReversePass reverse;
 

@@ -25,31 +25,45 @@ namespace Matrix {
             using matrix_iter = std::vector<float>::iterator;
             using const_matrix_iter = std::vector<float>::const_iterator;
             
-            ~Representation() noexcept = default;
+            ~Representation() noexcept {};
+            
+            
             Representation() noexcept : rows(0), columns(0) {}
-            Representation(Rows _l, Columns _w) noexcept  : 
+            
+            
+            explicit Representation(Rows _l, Columns _w) noexcept  : 
                 rows(_l.get()), 
                 columns(_w.get()), 
                 data(std::vector<float>(_l.get() * _w.get(), 0)) {}
 
-            Representation(const Matrix::Representation& _other) noexcept : 
+            
+            explicit Representation(const Matrix::Representation& _other) noexcept : 
                 rows(_other.rows), 
                 columns(_other.columns), 
                 data(_other.data) {}
-            Representation(Matrix::Representation&& _other) noexcept : 
+            
+            
+            explicit Representation(Matrix::Representation&& _other) noexcept : 
                 rows(std::exchange(_other.rows, 0)), 
                 columns(std::exchange(_other.columns, 0)), 
                 data(std::move(_other.data)) {}
             
-            Representation& operator=(Matrix::Representation&& _other) noexcept {
-                swap(*this, _other);
+
+            Representation& operator=(const Matrix::Representation& _other) noexcept {
+                rows    = _other.rows; 
+                columns = _other.columns; 
+                data    = _other.data;
                 return *this;
             }
 
-            // Representation operator=(const Matrix::Representation&& _other) {
-            //     rows = _other.num_rows(); columns = _other.num_cols(); data = std::move(_other.data);
-            //     return *this; 
-            // }
+
+            Representation& operator=(Matrix::Representation&& _other) {
+                rows = std::exchange(_other.rows, 0);
+                columns = std::exchange(_other.columns, 0); 
+                data = std::move(_other.data);
+                return *this; 
+            }
+            
 
             bool operator==(const Matrix::Representation _other) noexcept;
             bool operator!=(const Matrix::Representation _other) noexcept;

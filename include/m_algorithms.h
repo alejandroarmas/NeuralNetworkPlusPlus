@@ -33,14 +33,14 @@ namespace Matrix {
 
                 public:
                     Matrix::Representation operator()(
-                        const Matrix::Representation& l) const{
+                        const Matrix::Representation& l) const noexcept {
 
                         return Impl().operate(l); 
                         };
                     
                 ~UnaryAdapter() = default;
                 private:
-                    Implementation& Impl() const { return *static_cast<Implementation*>(const_cast<UnaryAdapter<Implementation>*>(this)); }
+                    Implementation& Impl() const noexcept { return *static_cast<Implementation*>(const_cast<UnaryAdapter<Implementation>*>(this)); }
                     friend Implementation;
                     
             };
@@ -52,7 +52,7 @@ namespace Matrix {
 
                 public:
                     Matrix::Representation operate(
-                        const Matrix::Representation& m) const;
+                        const Matrix::Representation& m) const noexcept;
             };
 
             static_assert(MatrixOperatable<ReLU>);
@@ -62,7 +62,7 @@ namespace Matrix {
 
                 public:
                     Matrix::Representation operate(
-                        const Matrix::Representation& m) const;
+                        const Matrix::Representation& m) const noexcept;
             };
 
             static_assert(MatrixOperatable<SoftMax>);
@@ -82,7 +82,7 @@ namespace Matrix {
                     ~BaseOp() = default;
                     Matrix::Representation operator()(
                         const Matrix::Representation& l, 
-                        const Matrix::Representation& r) const { 
+                        const Matrix::Representation& r) const noexcept { 
                             
                             bool rows_compatable = l.num_rows() == r.num_rows();
                             bool cols_compatable = l.num_cols() == r.num_cols();
@@ -94,10 +94,10 @@ namespace Matrix {
 
                             assert(result.num_rows() == 1 && result.num_cols() == 1 && "Metric Operation must return scalar.");
 
-                            return result;
+                            return Matrix::Representation{result};
                         }
                 private:
-                    Implementation& Impl() const { return *static_cast<Implementation*>(const_cast<BaseOp<Implementation>*>(this)); }
+                    Implementation& Impl() const noexcept { return *static_cast<Implementation*>(const_cast<BaseOp<Implementation>*>(this)); }
                     friend Implementation;
 
             };
@@ -107,7 +107,7 @@ namespace Matrix {
                 public:
                     Matrix::Representation operate(
                         const Matrix::Representation& p, 
-                        const Matrix::Representation& q) const;
+                        const Matrix::Representation& q) const noexcept;
             };
 
         
@@ -128,12 +128,12 @@ namespace Matrix {
                     ~BaseOp() = default;
                     Matrix::Representation operator()(
                         const Matrix::Representation& l, 
-                        const Matrix::Representation& r) const { 
+                        const Matrix::Representation& r) const noexcept { 
                                                     
                             return Impl().operate(l, r);
                         };
                 private:
-                    Implementation& Impl() const { return *static_cast<Implementation*>(const_cast<BaseOp<Implementation>*>(this)); }
+                    Implementation& Impl() const noexcept { return *static_cast<Implementation*>(const_cast<BaseOp<Implementation>*>(this)); }
                     friend Implementation;
 
             };
@@ -150,7 +150,7 @@ namespace Matrix {
                     public:
                         Matrix::Representation operate(
                             const Matrix::Representation& l, 
-                            const Matrix::Representation& r) const;
+                            const Matrix::Representation& r) const noexcept;
                 };
 
             }
@@ -164,7 +164,7 @@ namespace Matrix {
                     public:
                         Matrix::Representation operate(
                             const Matrix::Representation& l, 
-                            const Matrix::Representation& r) const;
+                            const Matrix::Representation& r) const noexcept;
                 };
 
             }
@@ -180,7 +180,7 @@ namespace Matrix {
                     public:
                         Matrix::Representation operate(
                             const Matrix::Representation& l, 
-                            const Matrix::Representation& r) const;
+                            const Matrix::Representation& r) const noexcept;
                 };
 
 
@@ -201,7 +201,7 @@ namespace Matrix {
                     public:
                         Matrix::Representation operate(
                             const Matrix::Representation& l, 
-                            const Matrix::Representation& r) const;
+                            const Matrix::Representation& r) const noexcept;
                 };
 
 
@@ -210,7 +210,7 @@ namespace Matrix {
                     public:
                         Matrix::Representation operate(
                             const Matrix::Representation& l, 
-                            const Matrix::Representation& r) const;
+                            const Matrix::Representation& r) const noexcept;
                 };
 
 
@@ -224,8 +224,8 @@ namespace Matrix {
             /*
             Matrix Multiplication Usage:
 
-                Matrix::Representation ma = std::make_unique<Matrix::Representation>(2000, 100);
-                Matrix::Representation mb = std::make_unique<Matrix::Representation>(100, 3000);
+                Matrix::Representation ma = Matrix::Representation(2000, 100);
+                Matrix::Representation mb = Matrix::Representation(100, 3000);
 
                 Matrix::Operations::Multiplication::Naive mul;
 
@@ -239,7 +239,7 @@ namespace Matrix {
                     public:
                         Matrix::Representation operate(
                             const Matrix::Representation& l, 
-                            const Matrix::Representation& r) const;
+                            const Matrix::Representation& r) const noexcept;
 
                 };
 
@@ -249,7 +249,7 @@ namespace Matrix {
                         public:
                             Matrix::Representation operate(
                                 const Matrix::Representation& l, 
-                                const Matrix::Representation& r) const ;
+                                const Matrix::Representation& r) const noexcept;
                 };
 
 
@@ -258,12 +258,12 @@ namespace Matrix {
                                 public:
                                     Matrix::Representation operate(
                                         const Matrix::Representation& l, 
-                                        const Matrix::Representation& r) const;
+                                        const Matrix::Representation& r) const noexcept;
                 };
 
 
                 void add_matmul_rec(std::vector<float>::iterator c, std::vector<float>::iterator a, std::vector<float>::iterator b, 
-                        int m, int n, int p, int fdA, int fdB, int fdC);
+                        int m, int n, int p, int fdA, int fdB, int fdC) noexcept;
                     
 
             } // namespace Multiplication

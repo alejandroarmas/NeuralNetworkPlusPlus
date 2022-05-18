@@ -24,10 +24,10 @@ namespace Matrix {
 
                     
 
-                    std::string debug_message(const Matrix::Representation& l, 
+                    std::string_view debug_message(const Matrix::Representation& l, 
                                             const Matrix::Representation& r);
                     
-                    std::string debug_message_2(const Matrix::Representation& l, 
+                    std::string_view debug_message_2(const Matrix::Representation& l, 
                                             const Matrix::Representation& r);
                     
 

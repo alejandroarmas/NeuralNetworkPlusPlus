@@ -28,7 +28,7 @@ TEST_CASE("Matrix Addition")
     SUBCASE("Cilk-for Multiplication")
     {
 
-        CHECK((sum == test_output) == true);
+        CHECK((matrix_t{sum} == matrix_t{test_output}) == true);
     }
 
 }

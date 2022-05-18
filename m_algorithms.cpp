@@ -4,6 +4,7 @@
 #include <cilk/cilk.h>
 #include <iostream>
 #include <math.h>
+#include <assert.h>
 
 
 namespace Matrix {
@@ -15,23 +16,23 @@ namespace Matrix {
 
    
             Matrix::Representation ReLU::operate(
-                        const Matrix::Representation& m) const{
+                        const Matrix::Representation& m) const noexcept{
 
-                Matrix::Representation output = Matrix::Representation(
+                Matrix::Representation output = Matrix::Representation{
                             Matrix::Rows(m.num_rows()), 
                             Matrix::Columns(m.num_cols())
-                    );
+                };
                 
 
                 std::replace_copy_if(m.constScanStart(), m.constScanEnd(), output.scanStart(), 
                     [](float z){ return z < 0;}, 0);
 
-                return output;
+                return Matrix::Representation{output};
             }
 
 
             Matrix::Representation SoftMax::operate(
-                        const Matrix::Representation& m) const{
+                        const Matrix::Representation& m) const noexcept{
 
                 
                 Matrix::Representation output = Matrix::Representation(
@@ -46,7 +47,7 @@ namespace Matrix {
 
 
 
-                return output;
+                return Matrix::Representation{output};
             }
 
 
@@ -58,7 +59,7 @@ namespace Matrix {
 
             Matrix::Representation CrossEntropy::operate(
                         const Matrix::Representation& p, 
-                        const Matrix::Representation& q) const {
+                        const Matrix::Representation& q) const noexcept {
                 
                 Matrix::Representation output = Matrix::Representation(
                             Matrix::Rows(1), 
@@ -75,7 +76,7 @@ namespace Matrix {
 
                 output.put(0, 0, entropy);
 
-                return output;
+                return Matrix::Representation{output};
             }
 
         }
@@ -89,17 +90,26 @@ namespace Matrix {
 
                 Matrix::Representation Std::operate(
                         const Matrix::Representation& l, 
-                        const Matrix::Representation& r) const {
+                        const Matrix::Representation& r) const noexcept {
 
-                    if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols())) {
-                        throw std::length_error(Utility::debug_message_2(l, r));
-                    }
+
+#if DEBUG
+                    if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols()))
+                        std::cout << Utility::debug_message_2(l, r) << endl;
+#endif
+                    assert((l.num_rows() == r.num_rows()) && (l.num_cols() == r.num_cols()));
+
+
+
+                    // if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols())) {
+                    //     throw std::length_error(Utility::debug_message_2(l, r));
+                    // }
                         
                     auto output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
 
                     std::transform(l.constScanStart(), l.constScanEnd(), r.constScanStart(), output.scanStart(), std::plus<float>());
 
-                    return output;
+                    return Matrix::Representation{output};
                 }
             }
 
@@ -107,17 +117,20 @@ namespace Matrix {
 
                 Matrix::Representation Std::operate(
                         const Matrix::Representation& l, 
-                        const Matrix::Representation& r) const {
+                        const Matrix::Representation& r) const noexcept {
 
-                    if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols())) {
-                        throw std::length_error(Utility::debug_message_2(l, r));
-                    }
+#if DEBUG
+                    if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols()))
+                        std::cout << Utility::debug_message_2(l, r) << endl;
+#endif
+                    assert((l.num_rows() == r.num_rows()) && (l.num_cols() == r.num_cols()));
+
                         
                     auto output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
 
                     std::transform(l.constScanStart(), l.constScanEnd(), r.constScanStart(), output.scanStart(), std::minus<float>());
 
-                    return output;
+                    return Matrix::Representation{output};
                 }
             }
 
@@ -127,14 +140,23 @@ namespace Matrix {
 
                 Matrix::Representation Naive::operate(
                         const Matrix::Representation& l, 
-                        const Matrix::Representation& r) const {
+                        const Matrix::Representation& r) const noexcept {
 
-                    if (l.num_rows() != r.num_rows() && l.num_cols() != r.num_cols()) {
-                        throw std::length_error(Utility::debug_message_2(l, r));
-                    }
-                    if (l.num_rows() != 1 && l.num_cols() != 1) {
-                        throw std::length_error("Operands are not Vectors.");
-                    }
+
+
+#if DEBUG
+                    if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols()))
+                        std::cout << Utility::debug_message_2(l, r) << endl;
+#endif
+                    assert((l.num_rows() == r.num_rows()) && (l.num_cols() == r.num_cols()));
+                    assert((l.num_rows() == 1) && (l.num_cols() == 1) || (l.num_cols() == 1) && (l.num_rows() == 1) && "Operands are not Vectors.");
+
+                    // if (l.num_rows() != r.num_rows() && l.num_cols() != r.num_cols()) {
+                    //     throw std::length_error(Utility::debug_message_2(l, r));
+                    // }
+                    // if (l.num_rows() != 1 && l.num_cols() != 1) {
+                    //     throw std::length_error("Operands are not Vectors.");
+                    // }
                     
                     u_int64_t dimension; 
 
@@ -156,7 +178,7 @@ namespace Matrix {
                         }
                     }
                     
-                    return output;
+                    return Matrix::Representation{output};
                 }
 
             }
@@ -166,7 +188,7 @@ namespace Matrix {
 
                 Matrix::Representation Std::operate(
                         const Matrix::Representation& l, 
-                        const Matrix::Representation& r) const {
+                        const Matrix::Representation& r) const noexcept {
 
                         auto output = Matrix::Representation(
                                 Rows(l.num_rows()), 
@@ -175,17 +197,25 @@ namespace Matrix {
                         
                         std::transform(l.constScanStart(), l.constScanEnd(), r.constScanStart(), output.scanStart(), std::multiplies<float>()); 
                         
-                    return output;
+                    return Matrix::Representation{output};
                 }
 
 
                 Matrix::Representation Naive::operate(
                         const Matrix::Representation& l, 
-                        const Matrix::Representation& r) const {
+                        const Matrix::Representation& r) const noexcept {
 
-                    if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols())) {
-                        throw std::length_error("Matrix A not same size as Matrix B.");
-                    }
+
+
+#if DEBUG
+                    if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols()))
+                        std::cout << Utility::debug_message_2(l, r) << endl;
+#endif
+                    assert((l.num_rows() == r.num_rows()) && (l.num_cols() == r.num_cols()));
+
+                    // if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols())) {
+                    //     throw std::length_error("Matrix A not same size as Matrix B.");
+                    // }
 
                     Matrix::Representation output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
 
@@ -204,7 +234,7 @@ namespace Matrix {
                     }
 
 
-                    return output;
+                    return Matrix::Representation{output};
                 }
             } 
 
@@ -213,12 +243,19 @@ namespace Matrix {
 
                 Matrix::Representation Naive::operate(
                         const Matrix::Representation& l, 
-                        const Matrix::Representation& r) const {
+                        const Matrix::Representation& r) const noexcept {
 
-                    if (l.num_cols() != r.num_rows()) {
-                        throw std::length_error(Utility::debug_message(l, r));
 
-                    }
+#if DEBUG
+                    if (l.num_cols() != r.num_rows())
+                        std::cout << Utility::debug_message(l, r) << endl;
+#endif
+                    assert(l.num_cols() == r.num_rows());
+
+                    // if (l.num_cols() != r.num_rows()) {
+                    //     throw std::length_error(Utility::debug_message(l, r));
+
+                    // }
 
                     Matrix::Representation output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
 
@@ -242,7 +279,7 @@ namespace Matrix {
 
 
 
-                    return output;
+                    return Matrix::Representation{output};
                 }
 
                 
@@ -250,7 +287,7 @@ namespace Matrix {
                     Adapted from https://ocw.mit.edu/courses/mathematics/18-335j-introduction-to-numerical-methods-spring-2019/week-5/MIT18_335JS19_lec12.pdf
                     */
                     void add_matmul_rec(std::vector<float>::const_iterator a, std::vector<float>::const_iterator b, std::vector<float>::iterator c, 
-                        int m, int n, int p, int fdA, int fdB, int fdC) {
+                        int m, int n, int p, int fdA, int fdB, int fdC) noexcept {
                         
                         if (m + n + p <= 48) {  
                             int i, j, k;
@@ -285,29 +322,42 @@ namespace Matrix {
 
                 Matrix::Representation ParallelDNC::operate(
                         const Matrix::Representation& l, 
-                        const Matrix::Representation& r) const {
+                        const Matrix::Representation& r) const noexcept {
 
-                    if (l.num_cols() != r.num_rows()) {
+                    // if (l.num_cols() != r.num_rows()) {
                         
-                        throw std::length_error(Utility::debug_message(l, r));
-                    }
+                    //     throw std::length_error(Utility::debug_message(l, r));
+                    // }
+#if DEBUG
+                    if (l.num_cols() != r.num_rows())
+                        std::cout << Utility::debug_message(l, r) << endl;
+#endif
+                    assert(l.num_cols() == r.num_rows());
+
 
                     Matrix::Representation output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
 
                     add_matmul_rec(l.constScanStart(), r.constScanStart(), output.scanStart(), l.num_rows(), l.num_cols(), r.num_cols(), l.num_cols(), r.num_cols(), r.num_cols());
 
-                    return output;
+                    return Matrix::Representation{output};
                 }
         
         
                 Matrix::Representation Square::operate(
                         const Matrix::Representation& l, 
-                        const Matrix::Representation& r) const {
+                        const Matrix::Representation& r) const noexcept {
 
-                    if (l.num_cols() != r.num_rows()) {
-                        throw std::length_error(Utility::debug_message(l, r));
+                    // if (l.num_cols() != r.num_rows()) {
+                    //     throw std::length_error(Utility::debug_message(l, r));
 
-                    }
+                    // }
+
+#if DEBUG
+                    if (l.num_cols() != r.num_rows())
+                        std::cout << Utility::debug_message(l, r) << endl;
+#endif
+                    assert(l.num_cols() == r.num_rows());
+
 
                     Matrix::Representation output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
 
@@ -331,7 +381,7 @@ namespace Matrix {
 
 
 
-                    return output;
+                    return Matrix::Representation{output};
                 }
         
             } // namespace Multiplication
