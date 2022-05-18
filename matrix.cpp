@@ -1,11 +1,12 @@
 #include <iostream>
 #include <iomanip>
+#include <assert.h>
 
 #include "matrix.h"
 #include "functions.h"
 
 
-bool Matrix::Representation::operator==(const Matrix::Representation _other) {
+bool Matrix::Representation::operator==(const Matrix::Representation _other) noexcept {
 
     bool isEqual = this->data.size() == _other.data.size();
     
@@ -17,7 +18,7 @@ bool Matrix::Representation::operator==(const Matrix::Representation _other) {
 }
 
 
-bool Matrix::Representation::operator!=(const Matrix::Representation _other) {
+bool Matrix::Representation::operator!=(const Matrix::Representation _other) noexcept {
     
     bool isEqual = this->data.size() == _other.data.size();    
 
@@ -28,30 +29,27 @@ bool Matrix::Representation::operator!=(const Matrix::Representation _other) {
     return !isEqual;
 }
 
+float Matrix::Representation::get(u_int64_t r, u_int64_t c) const noexcept {
+
+    assert(r <= rows && c <= columns && "Invalid Matrix Index.");
+
+    uint64_t calculated_index = c + r * columns; 
+
+    return data.at(calculated_index);
+
+}
 
 
-// constexpr float Matrix::Representation::get(u_int64_t r, u_int64_t c) {
+void Matrix::Representation::put(u_int64_t r, u_int64_t c, float val) noexcept {
 
-//                 uint64_t calculated_index = c + r * columns; 
+    assert(r <= rows && c <= columns && "Invalid Matrix Index.");
 
-//                 if (r <= rows && c <= columns) {
-//                     return data.at(calculated_index);
-//                 }
-//                 else throw std::range_error("Index not accepted for this Matrix.");
+    uint64_t calculated_index = c + r * columns; 
 
-//             }
+    data.at(calculated_index) = val;
 
+}
 
-// constexpr void Matrix::Representation::put(u_int64_t r, u_int64_t c, float val) {
-
-//                 uint64_t calculated_index = c + r * columns; 
-
-//                 if (r <= rows && c <= columns) {
-//                     data.at(calculated_index) = val;
-//                 }
-//                 else throw std::range_error("Index not accepted for this Matrix.");
-
-//             }
 
 
 
