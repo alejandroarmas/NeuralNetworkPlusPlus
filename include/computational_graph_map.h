@@ -30,6 +30,7 @@ namespace NeuralNetwork {
             */
             class ComputationalGraphMap {
 
+
                 public:
                     static ComputationalGraphMap& get(){
                         static ComputationalGraphMap map;
@@ -48,18 +49,18 @@ namespace NeuralNetwork {
 
 
                 protected:
+                    constexpr static uint16_t ENTRIES = 2000;
                     ComputationalGraphMap() :
-                        op_registry(2000),
-                        tensor_registry(2000),
-                        recovered_tensor_id(),
-                        tensor_id(0) {}
+                        op_registry(ENTRIES),
+                        tensor_registry(ENTRIES),
+                        recovered_tensor_id() {}
 
 
                 private:
                     std::vector<FunctionObject> op_registry;
                     std::vector<std::shared_ptr<Tensor>> tensor_registry;
                     std::stack<TensorID> recovered_tensor_id;
-                    TensorID tensor_id;
+                    static TensorID tensor_id;
 
                 
             };

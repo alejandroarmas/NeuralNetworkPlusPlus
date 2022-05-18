@@ -11,6 +11,8 @@ namespace NeuralNetwork {
 
         namespace Graph {
 
+            TensorID ComputationalGraphMap::tensor_id = TensorID(0);
+
 
             FunctionObject ComputationalGraphMap::_get_operation(TensorID my_tensor_id) noexcept { 
                 // u_int16_t my_tensor_id = _t->get_tensor_id();
