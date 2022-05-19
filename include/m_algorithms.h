@@ -68,6 +68,13 @@ namespace Matrix {
             static_assert(MatrixOperatable<SoftMax>);
 
 
+            // class Transpose : public UnaryAdapter<ReLU> {
+
+            //     public:
+            //         Matrix::Representation operate(
+            //             const Matrix::Representation& m) const noexcept;
+            // };
+
         }
 
         namespace Metric {
@@ -92,7 +99,7 @@ namespace Matrix {
                             
                             auto result = Impl().operate(l, r);
 
-                            assert(result.num_rows() == 1 && result.num_cols() == 1 && "Metric Operation must return scalar.");
+                            assert(result.get_type() == Matrix::Representation::Type::SCALAR && "Metric Operation must return scalar.");
 
                             return Matrix::Representation{result};
                         }

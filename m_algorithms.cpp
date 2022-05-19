@@ -100,10 +100,6 @@ namespace Matrix {
                     assert((l.num_rows() == r.num_rows()) && (l.num_cols() == r.num_cols()));
 
 
-
-                    // if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols())) {
-                    //     throw std::length_error(Utility::debug_message_2(l, r));
-                    // }
                         
                     auto output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
 
@@ -145,18 +141,15 @@ namespace Matrix {
 
 
 #if DEBUG
-                    if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols()))
+                    if (l.get_type() != r.get_type() || 
+                        l.get_type() =! Matrix::Representation::Type::COLUMN_VECTOR && 
+                        l.get_type() =! Matrix::Representation::Type::ROW_VECTOR)
                         std::cout << Utility::debug_message_2(l, r) << endl;
 #endif
-                    assert((l.num_rows() == r.num_rows()) && (l.num_cols() == r.num_cols()));
-                    assert((l.num_rows() == 1) && (l.num_cols() == 1) || (l.num_cols() == 1) && (l.num_rows() == 1) && "Operands are not Vectors.");
-
-                    // if (l.num_rows() != r.num_rows() && l.num_cols() != r.num_cols()) {
-                    //     throw std::length_error(Utility::debug_message_2(l, r));
-                    // }
-                    // if (l.num_rows() != 1 && l.num_cols() != 1) {
-                    //     throw std::length_error("Operands are not Vectors.");
-                    // }
+                    assert(l.get_type() == r.get_type() && 
+                        l.get_type() == Matrix::Representation::Type::COLUMN_VECTOR || 
+                        l.get_type() == Matrix::Representation::Type::ROW_VECTOR &&
+                        "Operands are not Vectors.");
                     
                     u_int64_t dimension; 
 
@@ -208,14 +201,15 @@ namespace Matrix {
 
 
 #if DEBUG
-                    if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols()))
+                    if (l.get_type() != r.get_type() || 
+                        l.get_type() =! Matrix::Representation::Type::COLUMN_VECTOR && 
+                        l.get_type() =! Matrix::Representation::Type::ROW_VECTOR)
                         std::cout << Utility::debug_message_2(l, r) << endl;
 #endif
-                    assert((l.num_rows() == r.num_rows()) && (l.num_cols() == r.num_cols()));
-
-                    // if ((l.num_rows() != r.num_rows()) && (l.num_cols() != r.num_cols())) {
-                    //     throw std::length_error("Matrix A not same size as Matrix B.");
-                    // }
+                    assert(l.get_type() == r.get_type() && 
+                        l.get_type() == Matrix::Representation::Type::COLUMN_VECTOR || 
+                        l.get_type() == Matrix::Representation::Type::ROW_VECTOR &&
+                        "Operands are not Vectors.");
 
                     Matrix::Representation output = Matrix::Representation(Rows(l.num_rows()), Columns(r.num_cols()));
 
@@ -324,10 +318,7 @@ namespace Matrix {
                         const Matrix::Representation& l, 
                         const Matrix::Representation& r) const noexcept {
 
-                    // if (l.num_cols() != r.num_rows()) {
-                        
-                    //     throw std::length_error(Utility::debug_message(l, r));
-                    // }
+                    
 #if DEBUG
                     if (l.num_cols() != r.num_rows())
                         std::cout << Utility::debug_message(l, r) << endl;
@@ -347,10 +338,7 @@ namespace Matrix {
                         const Matrix::Representation& l, 
                         const Matrix::Representation& r) const noexcept {
 
-                    // if (l.num_cols() != r.num_rows()) {
-                    //     throw std::length_error(Utility::debug_message(l, r));
-
-                    // }
+                    
 
 #if DEBUG
                     if (l.num_cols() != r.num_rows())

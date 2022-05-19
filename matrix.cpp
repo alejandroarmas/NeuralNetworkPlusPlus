@@ -8,6 +8,7 @@
 
 bool Matrix::Representation::operator==(const Matrix::Representation _other) noexcept {
 
+
     bool isEqual = this->data.size() == _other.data.size();
     
     for (size_t i = 0; isEqual && i < this->data.size(); i++) {
@@ -51,6 +52,21 @@ void Matrix::Representation::put(u_int64_t r, u_int64_t c, float val) noexcept {
 }
 
 
+Matrix::Representation::Type Matrix::Representation::get_type(void) const noexcept {
+    bool is_row_vector    = rows    == 1; 
+    bool is_column_vector = columns == 1;
+    bool is_scalar = is_row_vector && is_column_vector;
+
+    
+    if (is_scalar) 
+        return Type::SCALAR;
+    else if (is_column_vector) 
+        return Type::COLUMN_VECTOR;
+    else if (is_row_vector) 
+        return Type::ROW_VECTOR;
+    else
+        return Type::MATRIX;
+}
 
 
 

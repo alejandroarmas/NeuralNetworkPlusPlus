@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "assert.h"
 #include "strong_types.h"
 
 
@@ -17,9 +18,11 @@ namespace Matrix {
     using Rows    = NamedType<u_int64_t, struct RowParameter>;
     using Columns = NamedType<u_int64_t, struct ColumnParameter>;
 
+    
+
+
 
     class Representation {
-
 
         public:
             using matrix_iter = std::vector<float>::iterator;
@@ -27,11 +30,18 @@ namespace Matrix {
             
             ~Representation() noexcept {};
             
-            
+            enum class Type : uint8_t {
+                MATRIX,
+                ROW_VECTOR,
+                COLUMN_VECTOR,
+                SCALAR,
+            };
+
+
             Representation() noexcept : rows(0), columns(0) {}
             
             
-            explicit Representation(Rows _l, Columns _w) noexcept  : 
+                explicit Representation(Rows _l, Columns _w) noexcept  : 
                 rows(_l.get()), 
                 columns(_w.get()), 
                 data(std::vector<float>(_l.get() * _w.get(), 0)) {}
@@ -63,7 +73,8 @@ namespace Matrix {
                 data = std::move(_other.data);
                 return *this; 
             }
-            
+
+            Type get_type(void) const noexcept;
 
             bool operator==(const Matrix::Representation _other) noexcept;
             bool operator!=(const Matrix::Representation _other) noexcept;
@@ -83,17 +94,42 @@ namespace Matrix {
             constexpr const_matrix_iter constScanEnd() const { return data.cend(); }
 
 
-            friend void swap(Representation& left, Representation& right) noexcept {
-                std::swap(left.rows, right.rows);
-                std::swap(left.columns, right.columns);
-                std::swap(left.data, right.data);
-            }
+            // friend void swap(Representation& left, Representation& right) noexcept {
+            //     std::swap(left.rows, right.rows);
+            //     std::swap(left.columns, right.columns);
+            //     std::swap(left.data, right.data);
+            // }
 
         private:
             u_int64_t rows;
             u_int64_t columns;
             std::vector<float> data;
     };
+
+
+
+    // class Matrix : public Representation {
+
+    // };
+
+    // class ColumnVector;
+
+    // class RowVector : public Representation {
+    //     RowVector() {}
+
+    //     ColumnVector transpose(void) {
+
+    //     }
+    // };
+
+    // class ColumnVector : public Representation {
+        
+    //     ColumnVector() {}
+
+    //     RowVector transpose(void) {
+    //     }
+
+    // };
 
 }
 
