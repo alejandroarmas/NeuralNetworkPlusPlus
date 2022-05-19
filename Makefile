@@ -27,7 +27,7 @@ endif
 VPATH = shared
 
 MAIN = main.o
-OBJS = main.o matrix.o generator.o matrix_printer.o functions.o network_layer.o m_algorithms_concepts.o m_algorithms.o function_object_factory.o function_object_iterator.o m_algorithms_utilities.o m_algorithms_register.o matrix_benchmark.o activation_layer.o tensor.o tensor_factory.o tensor_forward_wrapper.o tensor_backwards_pass.o computational_graph_map.o
+OBJS = main.o matrix.o generator.o matrix_printer.o functions.o network_layer.o m_algorithms_concepts.o m_algorithms.o function_object.o function_object_factory.o function_object_iterator.o m_algorithms_utilities.o`` m_algorithms_register.o matrix_benchmark.o activation_layer.o tensor.o tensor_factory.o tensor_forward_wrapper.o tensor_backwards_pass.o computational_graph_map.o
 OBJS_FOR_UNIT_TEST = $(foreach obj, $(OBJS), $(filter-out $(MAIN), $(wildcard *.o))) 
 
 
@@ -51,12 +51,15 @@ matrix_multiply: $(OBJS)
 ./unittests/obj/test_all.o: $(UNIT_TESTING_MAIN) 
 	$(CC) -c $(CPPFLAGS) $(INCLUDE) -o $@ $<
 
-# ./unittests/obj/%.o: ./unittests/%.cpp
-# 	$(CC) $(CPPFLAGS) -c $< -o $@
+./benchmarks/obj/%.o: ./benchmarks/%.cpp
+	$(CC) $(CPPFLAGS) -c $< -o $@
+
+%: ./benchmarks/obj/%.o $(OBJS_FOR_UNIT_TEST)
+	$(CC) -o $@ $(CPPFLAGS) $^ $(LDFLAGS)
 
 run_unit_tests: $(UNIT_TESTING_MAIN_OBJ) $(UNIT_TESTS_CPP) $(OBJS_FOR_UNIT_TEST)    
 	$(CC) $(CPPFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 
 clean:
-	rm -f matrix_multiply *.o *~ core.* *.d run_unit_tests unittests/obj/*.o
+	rm -f matrix_multiply *.o *~ core.* *.d run_unit_tests unittests/obj/*.o benchmarks/obj/*.o benchmark_*

@@ -33,12 +33,14 @@ namespace Matrix {
 
     
             template class Operations::Timer<Matrix::Operations::Unary::ReLU>;
+            template class Operations::Timer<Matrix::Operations::Unary::SoftMax>;
             template class Operations::Timer<Matrix::Operations::Binary::HadamardProduct::Std>;
             template class Operations::Timer<Matrix::Operations::Binary::Multiplication::ParallelDNC>;
             template class Operations::Timer<Matrix::Operations::Binary::Multiplication::Naive>;
             template class Operations::Timer<Matrix::Operations::Binary::Multiplication::Square>;
             template class Operations::Timer<Matrix::Operations::Binary::Addition::Std>;
             template class Operations::Timer<Matrix::Operations::Binary::OuterProduct::Naive>;
+            template class Operations::Timer<Matrix::Operations::Metric::CrossEntropy>;
 
 
 

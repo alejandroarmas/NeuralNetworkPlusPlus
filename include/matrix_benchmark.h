@@ -21,19 +21,21 @@ namespace Matrix {
             USAGE:
                     
                 using matrix_t = Matrix::Representation; 
-                std::unique_ptr<matrix_t> ma = std::make_unique<matrix_t>(5000, 5000);
-                std::unique_ptr<matrix_t> mb = std::make_unique<matrix_t>(5000, 5000);
+
+                matrix_t ma = matrix_t(Matrix::Rows(5000), Matrix::Columns(5000));
+                matrix_t mb = matrix_t(Matrix::Rows(5000), Matrix::Columns(5000));
                 Matrix::Generation::Normal<0, 1> normal_distribution_init;
 
-                ma = normal_distribution_init(std::move(ma));
-                mb = normal_distribution_init(std::move(mb));
+                ma = normal_distribution_init(ma);
+                mb = normal_distribution_init(mb);
 
                 Matrix::Operations::Timer mul_bm_r(
-                        std::make_unique<Matrix::Operations::Binary::Multiplication::ParallelDNC>());
-                std::unique_ptr<matrix_t> mf = mul_bm_r(std::move(ma), std::move(mb));
-                
+                    Matrix::Operations::Binary::Multiplication::ParallelDNC{}
+                );
 
-                std::cout << "Performed in " << mul_bm_r.get_computation_duration_ms() << " ms." << std::endl;
+                matrix_t mf = mul_bm_r(ma, mb);
+                
+                std::cout << std::endl << "Performed in " << mul_bm_r.get_computation_duration_ms() << " ms." << std::endl;
             */
             template <Matrix::Operations::MatrixOperatable Operator>
             class Timer {
