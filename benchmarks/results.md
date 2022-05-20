@@ -11,3 +11,5 @@
 [5000, 1] x [5000, 1] **Softmax** Benchmark: 5 ms
 
 [5000, 1] x [5000, 1] **Hadamard Product** Benchmark: 21 ms.
+
+[10000, 9000] **Matrix Transpose** Benchmark: 659166 -> 66771 ms.
