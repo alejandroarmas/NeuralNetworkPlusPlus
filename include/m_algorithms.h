@@ -34,7 +34,6 @@ namespace Matrix {
                 public:
                     Matrix::Representation operator()(
                         const Matrix::Representation& l) const noexcept {
-
                         return Impl().operate(l); 
                         };
                     
@@ -58,7 +57,7 @@ namespace Matrix {
             static_assert(MatrixOperatable<ReLU>);
 
 
-            class SoftMax : public UnaryAdapter<ReLU> {
+            class SoftMax : public UnaryAdapter<SoftMax> {
 
                 public:
                     Matrix::Representation operate(
@@ -68,12 +67,20 @@ namespace Matrix {
             static_assert(MatrixOperatable<SoftMax>);
 
 
-            // class Transpose : public UnaryAdapter<ReLU> {
+            class Transpose : public UnaryAdapter<Transpose> {
 
-            //     public:
-            //         Matrix::Representation operate(
-            //             const Matrix::Representation& m) const noexcept;
-            // };
+                public:
+                    Matrix::Representation operate(
+                        const Matrix::Representation& m) const noexcept;
+            };
+
+            static_assert(MatrixOperatable<Transpose>);
+
+
+            void transpose_helper(
+                std::vector<float>::const_iterator in, 
+                std::vector<float>::iterator       out, 
+                int rb, int re, int cb, int ce, int rows, int cols) noexcept;
 
         }
 

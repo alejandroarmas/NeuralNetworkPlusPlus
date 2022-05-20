@@ -11,36 +11,42 @@
 namespace Matrix {
 
 
-    template <Matrix::Operations::MatrixOperatable Operator>
-    Representation Operations::Timer<Operator>::operator()(const Matrix::Representation& l, 
-            const Matrix::Representation& r) {
+    // template <Operations::UnaryMatrixOperatable Operator>
+    // Representation Operations::Timer<Operator>::operator()(const Matrix::Representation& l, 
+    //         const Matrix::Representation& r) {
 
-                Matrix::Representation mc;
+    //     start = std::chrono::steady_clock::now();                
+    //     Matrix::Representation mc = matrix_operation(l);
+    //     end   = std::chrono::steady_clock::now();
 
-                start = std::chrono::steady_clock::now();                
-                if constexpr (Matrix::Operations::UnaryMatrixOperatable<Operator>) {
-                    mc = matrix_operation(l);
-                }
-                else if constexpr (Matrix::Operations::BinaryMatrixOperatable<Operator>) {
-                    mc = matrix_operation(l, r);
-                }
+        
+    //     return Matrix::Representation{mc};
+    // }
 
-                end   = std::chrono::steady_clock::now();
 
-                
-                return Matrix::Representation{mc};
-            }
+    // template <Operations::BinaryMatrixOperatable Operator>
+    // Representation Operations::Timer<Operator>::operator()(const Matrix::Representation& l, 
+    //         const Matrix::Representation& r) {
+
+    //     start = std::chrono::steady_clock::now();                
+    //     Matrix::Representation mc = matrix_operation(l, r);
+    //     end   = std::chrono::steady_clock::now();
+
+        
+    //     return Matrix::Representation{mc};
+    // }
 
     
-            template class Operations::Timer<Matrix::Operations::Unary::ReLU>;
-            template class Operations::Timer<Matrix::Operations::Unary::SoftMax>;
-            template class Operations::Timer<Matrix::Operations::Binary::HadamardProduct::Std>;
-            template class Operations::Timer<Matrix::Operations::Binary::Multiplication::ParallelDNC>;
-            template class Operations::Timer<Matrix::Operations::Binary::Multiplication::Naive>;
-            template class Operations::Timer<Matrix::Operations::Binary::Multiplication::Square>;
-            template class Operations::Timer<Matrix::Operations::Binary::Addition::Std>;
-            template class Operations::Timer<Matrix::Operations::Binary::OuterProduct::Naive>;
-            template class Operations::Timer<Matrix::Operations::Metric::CrossEntropy>;
+    // template class Operations::Timer<Operations::Unary::ReLU>;
+    // template class Operations::Timer<Operations::Unary::SoftMax>;
+    // template class Operations::Timer<Operations::Unary::Transpose>;
+    // template class Operations::Timer<Operations::Binary::HadamardProduct::Std>;
+    // template class Operations::Timer<Operations::Binary::Multiplication::ParallelDNC>;
+    // template class Operations::Timer<Operations::Binary::Multiplication::Naive>;
+    // template class Operations::Timer<Operations::Binary::Multiplication::Square>;
+    // template class Operations::Timer<Operations::Binary::Addition::Std>;
+    // template class Operations::Timer<Operations::Binary::OuterProduct::Naive>;
+    // template class Operations::Timer<Operations::Metric::CrossEntropy>;
 
 
 

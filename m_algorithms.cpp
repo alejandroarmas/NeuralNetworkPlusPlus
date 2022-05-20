@@ -50,6 +50,73 @@ namespace Matrix {
                 return Matrix::Representation{output};
             }
 
+            Matrix::Representation Transpose::operate(
+                        const Matrix::Representation& m) const noexcept {
+
+                Matrix::Representation output = Matrix::Representation{
+                            Matrix::Rows(m.num_cols()), 
+                            Matrix::Columns(m.num_rows())
+                };
+
+                transpose_helper(
+                    m.constScanStart(), 
+                    output.scanStart(), 
+                    0, m.num_rows(), 
+                    0, m.num_cols(), 
+                    m.num_rows(), m.num_cols());
+
+                return Matrix::Representation{output};
+            }
+
+            void transpose_helper(
+                std::vector<float>::const_iterator in, 
+                std::vector<float>::iterator out, 
+                int rb, int re, int cb, int ce, int rows, int cols) noexcept {
+                
+                int r = re - rb, c = ce - cb;
+                if (r <= 16 && c <= 16) {
+                    for (int i = rb; i < re; i++) {
+                        for (int j = cb; j < ce; j++) {
+                            *(out + (j * rows + i)) = *(in + (i * cols + j));
+                        }
+                    }
+                } else if (r >= c) {
+                    cilk_spawn transpose_helper(in, out, rb, rb + (r / 2), cb, ce, rows, cols);
+                    transpose_helper(in, out, rb + (r / 2), re, cb, ce, rows, cols);
+                    cilk_sync;
+                } else {
+                    cilk_spawn transpose_helper(in, out, rb, re, cb, cb + (c / 2), rows, cols);
+                    transpose_helper(in, out, rb, re, cb + (c / 2), ce, rows, cols);
+                    cilk_sync;
+                }
+            }
+
+
+            // int transpose( double *a, int ndra, int nr, int nc, double *b, int ndrb ) {
+            //     if (nr < 32) {
+            //         for (int i = 0; i < n; i++)
+            //             for (int j = 0; j < i; j++)
+            //                 a[j * N + i] 
+            //                 a[i * N + j];
+            //         transposeBase(a, ndra, nr, nc, b, ndrb );
+            //     } 
+            //     else {
+            //     /* subdivide the long side */ 
+            //         if (nr > nc) {
+            //             transpose(a, ndra, nr/2, nc, b, ndrb );
+            //             transpose(a + nr/2 ,ndra, nr-nr/2, nc, b+(nr/2)*ndrb, ndrb ); 
+            //         }
+            //         else {
+            //             transpose(a, ndra, nr, nc/2, b, ndrb );
+            //             transpose(a + ndra*(nc/2), ndra, nr, nc-nc/2, b+nc/2, ndrb );
+            //         } 
+            //     }
+            // }
+
+            // void add_matmul_rec(std::vector<float>::const_iterator a, std::vector<float>::const_iterator b, std::vector<float>::iterator c, 
+            //             int m, int n, int p, int fdA, int fdB, int fdC) noexcept {
+            
+            // }
 
 
         } // Unary
@@ -174,6 +241,8 @@ namespace Matrix {
                     return Matrix::Representation{output};
                 }
 
+                
+
             }
 
 
@@ -279,6 +348,8 @@ namespace Matrix {
                 
                     /*
                     Adapted from https://ocw.mit.edu/courses/mathematics/18-335j-introduction-to-numerical-methods-spring-2019/week-5/MIT18_335JS19_lec12.pdf
+                    
+                    We need to divide the data until it fits into lowest cache.
                     */
                     void add_matmul_rec(std::vector<float>::const_iterator a, std::vector<float>::const_iterator b, std::vector<float>::iterator c, 
                         int m, int n, int p, int fdA, int fdB, int fdC) noexcept {

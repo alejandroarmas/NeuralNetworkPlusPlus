@@ -3,6 +3,8 @@
 
 #include <memory>
 #include <iostream>
+#include <chrono>
+#include <time.h>
 
 #include "matrix.h"
 #include "m_algorithms.h"
@@ -37,27 +39,50 @@ namespace Matrix {
                 
                 std::cout << std::endl << "Performed in " << mul_bm_r.get_computation_duration_ms() << " ms." << std::endl;
             */
-            template <Matrix::Operations::MatrixOperatable Operator>
+
+            template <Matrix::Operations::MatrixOperatable T>
             class Timer {
 
                 public:
-                    Timer(Operator _m) : 
+                    explicit Timer(T _m) : 
                         matrix_operation(_m) {} 
                     
-                    Representation operator()(
-                            const Representation& l,
-                            const Representation& r);
-
                     int get_computation_duration_ms() { 
                         return std::chrono::duration_cast<std::chrono::duration<int, std::micro>>(end - start).count(); }
                     std::chrono::steady_clock::time_point get_start() { return start; }
                     std::chrono::steady_clock::time_point get_end()   { return end;   }
-                    
+                
+
+                    template <Matrix::Operations::BinaryMatrixOperatable U = T>
+                    Representation operator()(
+                            const Matrix::Representation& l, 
+                            const Matrix::Representation& r) noexcept {
+
+                        start = std::chrono::steady_clock::now();                
+                        Matrix::Representation mc = matrix_operation(l, r);
+                        end   = std::chrono::steady_clock::now();
+
+                        return Matrix::Representation{mc};
+                    }
+
+                    template <Matrix::Operations::UnaryMatrixOperatable U = T>
+                    Representation operator()(
+                            const Matrix::Representation& l) noexcept {
+
+                        start = std::chrono::steady_clock::now();                
+                        Matrix::Representation mc = matrix_operation(l);
+                        end   = std::chrono::steady_clock::now();
+                        
+                        return Matrix::Representation{mc};
+                    }
+
                 private:
-                    Operator matrix_operation;
+
+                    T matrix_operation;
                     std::chrono::steady_clock::time_point start;
                     std::chrono::steady_clock::time_point end;
             };
+
 
     
 

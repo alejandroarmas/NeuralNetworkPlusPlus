@@ -9,7 +9,7 @@ namespace Matrix {
     class Printer {
 
         public:
-            std::unique_ptr<Matrix::Representation> operator()(std::unique_ptr<Matrix::Representation> m);
+            void operator()(const Matrix::Representation& m) noexcept;
     };
 
 

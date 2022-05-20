@@ -9,20 +9,16 @@
 #define MAX_PRINT_LENGTH 5
 
 
-std::unique_ptr<Matrix::Representation> Matrix::Printer::operator()(std::unique_ptr<Matrix::Representation> m) {
+void Matrix::Printer::operator()(const Matrix::Representation& m) noexcept {
 
-
-    if (m == nullptr) {
-        throw std::invalid_argument("Matrix has no data (pointing to null).");
-    }
 
     bool valid_column_print = true;
     bool reached_end_row = true;
     bool before_max_width = true;
     bool last_column_val = true;
     
-    u_int64_t n_cols = m->num_cols();
-    u_int64_t n_rows = m->num_rows();
+    u_int64_t n_cols = m.num_cols();
+    u_int64_t n_rows = m.num_rows();
     uint64_t total_iter = n_rows * n_cols; 
 
     std::cout << "Matrix[R=" << n_rows << "][C=" << n_cols << "]:"; 
@@ -41,7 +37,7 @@ std::unique_ptr<Matrix::Representation> Matrix::Printer::operator()(std::unique_
         
         if (before_max_width || last_column_val) {
             
-            std::cout << m->get(i / n_cols, i % n_cols) << " ";
+            std::cout << m.get(i / n_cols, i % n_cols) << " ";
             valid_column_print = true;
         }
         else if (!valid_column_print) {}
@@ -54,5 +50,4 @@ std::unique_ptr<Matrix::Representation> Matrix::Printer::operator()(std::unique_
 
     std::cout << std::endl << std::endl;
     
-    return m;
 }
