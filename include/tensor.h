@@ -23,6 +23,28 @@ namespace NeuralNetwork {
         namespace Graph {
 
 
+            class MatrixParameter {
+
+                using iterator = LevelOrderIterator<ReadParameterPolicy>; 
+
+                public:
+                    explicit MatrixParameter(TensorID _tid) : id(_tid) {}
+
+                    iterator begin() noexcept {
+                            return iterator{id}; 
+                        }
+
+                    iterator end() noexcept {
+                        return iterator{TensorID(0)}; 
+                    }
+                private:
+                    TensorID id;
+                
+
+            };
+
+
+
             class TensorStatistics {
                 
 
@@ -64,7 +86,7 @@ namespace NeuralNetwork {
             class Tensor {
 
                 using matrix_t = Matrix::Representation;
-                using iterator = LevelOrderIterator; 
+                using iterator = LevelOrderIterator<ComputeGradientPolicy>; 
 
                 public:
                     ~Tensor() noexcept {}
@@ -93,7 +115,7 @@ namespace NeuralNetwork {
                     void become_parent() noexcept;
 
                     matrix_t& release_matrix() noexcept;
-                    // matrix_t get_grad();
+                    matrix_t& get_grad() noexcept;
 
                     Matrix::Rows num_rows(void) const noexcept;
                     Matrix::Columns num_cols(void) const noexcept;
@@ -112,9 +134,13 @@ namespace NeuralNetwork {
                         return iterator{TensorID(0)}; 
                     }
 
+                    MatrixParameter parameters() noexcept {
+                        return MatrixParameter{my_tensor_id}; 
+                    }
+
                 private:
                     matrix_t matrix;
-                    // std::optional<matrix_t> grad;
+                    matrix_t grad;
                     TensorID my_tensor_id;
                     bool is_leaf;
                     bool requires_grad;
