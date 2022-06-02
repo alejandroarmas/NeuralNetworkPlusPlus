@@ -1,9 +1,11 @@
 #include "m_algorithms.h"
 #include "m_algorithms_utilities.h"
+#include "matrix_printer.h"
 
 #include <cilk/cilk.h>
 #include <iostream>
 #include <math.h>
+#include <numeric>
 #include <assert.h>
 
 
@@ -30,7 +32,31 @@ namespace Matrix {
                 return Matrix::Representation{output};
             }
 
+            Matrix::Representation Sign::operate(
+                        const Matrix::Representation& m) const noexcept{
 
+                Matrix::Representation output = Matrix::Representation(
+                            Matrix::Rows(m.num_rows()), 
+                            Matrix::Columns(m.num_cols())
+                    );
+                
+                std::transform(m.constScanStart(), m.constScanEnd(), output.scanStart(), [](const auto val) { return val >= 0 ? 1 : 0;}); 
+
+                return Matrix::Representation{output};
+            }
+
+
+            /*
+
+            DESCRIPTION:
+                Is a form of normalising arbitrary values using exponential distribution.
+
+                exp(x_i) / SUM(exp(x)) is numerically unstable if dividing large terms,
+                therefore we divide all intermediate terms by constant C = Max(exp(x)). 
+
+                https://cs231n.github.io/linear-classify/#softmax
+
+            */
             Matrix::Representation SoftMax::operate(
                         const Matrix::Representation& m) const noexcept{
 
@@ -39,13 +65,17 @@ namespace Matrix {
                             Matrix::Rows(m.num_rows()), 
                             Matrix::Columns(m.num_cols())
                     );
+                
 
                 auto max = std::max(m.constScanStart(), m.constScanEnd());
 
-                std::transform(m.constScanStart(), m.constScanEnd(), output.scanStart(), [max](const auto val) { return val - *max; }); 
-                std::transform(output.constScanStart(), output.constScanEnd(), output.scanStart(), [](const auto val) { return exp(val);}); 
+                std::transform(m.constScanStart(), m.constScanEnd(), output.scanStart(), [max](auto val) { return exp(val - *max); });
 
-
+                double sum = std::accumulate(output.constScanStart(), output.constScanEnd(), 0.0);
+        
+                std::transform(output.constScanStart(), output.constScanEnd(), output.scanStart(), 
+                    [sum](auto val) { return val / sum; }
+                ); 
 
                 return Matrix::Representation{output};
             }
@@ -92,35 +122,24 @@ namespace Matrix {
             }
 
 
-            // int transpose( double *a, int ndra, int nr, int nc, double *b, int ndrb ) {
-            //     if (nr < 32) {
-            //         for (int i = 0; i < n; i++)
-            //             for (int j = 0; j < i; j++)
-            //                 a[j * N + i] 
-            //                 a[i * N + j];
-            //         transposeBase(a, ndra, nr, nc, b, ndrb );
-            //     } 
-            //     else {
-            //     /* subdivide the long side */ 
-            //         if (nr > nc) {
-            //             transpose(a, ndra, nr/2, nc, b, ndrb );
-            //             transpose(a + nr/2 ,ndra, nr-nr/2, nc, b+(nr/2)*ndrb, ndrb ); 
-            //         }
-            //         else {
-            //             transpose(a, ndra, nr, nc/2, b, ndrb );
-            //             transpose(a + ndra*(nc/2), ndra, nr, nc-nc/2, b+nc/2, ndrb );
-            //         } 
-            //     }
-            // }
-
-            // void add_matmul_rec(std::vector<float>::const_iterator a, std::vector<float>::const_iterator b, std::vector<float>::iterator c, 
-            //             int m, int n, int p, int fdA, int fdB, int fdC) noexcept {
-            
-            // }
-
-
         } // Unary
 
+
+        /*
+
+        DESCRIPTION:
+            The cross-entropy between a “true” distribution p and an
+             estimated distribution q is defined as:
+
+             H(p, q) = -SUM(p(x), log(q(x)) ) 
+
+            Logit function takes a probability and produces a real number 
+            between negative and positive infinity.
+
+            taking the log of the odds ratio brings about a certain 
+            symmetricity in the results, making it easier to 
+            interpret and use in various statistics
+        */
         namespace Metric {
 
 
@@ -132,14 +151,15 @@ namespace Matrix {
                             Matrix::Rows(1), 
                             Matrix::Columns(1)
                     );
+                Matrix::Operations::Unary::SoftMax softmax;
 
+                Matrix::Representation theta = softmax(q); 
                 
-                float entropy = 0;
+                double entropy = 0;
 
-                for (auto p_i = p.constScanStart(), q_i = q.constScanStart(); q_i != q.constScanEnd(); p_i++, q_i++) {
-                    entropy += *p_i * log(*q_i);
-                }
-
+                for (auto p_i = p.constScanStart(), q_i = theta.constScanStart(); q_i != theta.constScanEnd(); p_i++, q_i++) {
+                    entropy -= *p_i * log(*q_i);
+                }                
 
                 output.put(0, 0, entropy);
 
@@ -208,24 +228,25 @@ namespace Matrix {
 
 
 #if DEBUG
-                    if (l.get_type() != r.get_type() || 
+                    if ( 
                         l.get_type() =! Matrix::Representation::Type::COLUMN_VECTOR && 
-                        l.get_type() =! Matrix::Representation::Type::ROW_VECTOR)
+                        l.get_type() =! Matrix::Representation::Type::ROW_VECTOR ||
+                        r.get_type() =! Matrix::Representation::Type::COLUMN_VECTOR && 
+                        r.get_type() =! Matrix::Representation::Type::ROW_VECTOR
+                    )
                         std::cout << Utility::debug_message_2(l, r) << endl;
 #endif
-                    assert(l.get_type() == r.get_type() && 
+                    assert(
                         l.get_type() == Matrix::Representation::Type::COLUMN_VECTOR || 
                         l.get_type() == Matrix::Representation::Type::ROW_VECTOR &&
+                        r.get_type() == Matrix::Representation::Type::COLUMN_VECTOR || 
+                        r.get_type() == Matrix::Representation::Type::ROW_VECTOR &&
                         "Operands are not Vectors.");
                     
-                    u_int64_t dimension; 
+                    u_int64_t x_dimension = l.num_rows() > r.num_rows() ? l.num_rows() : r.num_rows(); 
+                    u_int64_t y_dimension = r.num_cols() > l.num_cols() ? r.num_cols() : l.num_cols();
 
-                    if (l.num_rows() > l.num_cols()) {
-                        dimension = l.num_rows(); 
-                    }
-                    else dimension = l.num_cols(); 
-
-                    auto output = Matrix::Representation(Rows(dimension), Columns(dimension));
+                    auto output = Matrix::Representation(Rows(x_dimension), Columns(y_dimension));
 
                     auto li = l.constScanStart();
 
