@@ -171,7 +171,14 @@ namespace NeuralNetwork {
                 };
                 
 
-                struct Differentiate {};
+                struct Differentiate {
+                    explicit Differentiate(const Matrix::Representation& _g) : gradient(_g) {}
+                    Differentiate(Differentiate&) = default;
+                    Differentiate(Differentiate&&) = default;
+                    Differentiate& operator=(const Differentiate&) = default;
+                    Differentiate& operator=(Differentiate&&) = default;
+                    Matrix::Representation gradient;
+                };
 
             } // Events
 
@@ -187,7 +194,9 @@ namespace NeuralNetwork {
                         NeuralNetwork::Computation::Graph::Events::Instantiate<Matrix::Operations::Binary::Multiplication::Square>,
                         NeuralNetwork::Computation::Graph::Events::Instantiate<Matrix::Operations::Binary::Addition::Std>,
                         NeuralNetwork::Computation::Graph::Events::Instantiate<Matrix::Operations::Binary::OuterProduct::Naive>,
-                        NeuralNetwork::Computation::Graph::Events::Instantiate<Matrix::Operations::Metric::CrossEntropy>
+                        NeuralNetwork::Computation::Graph::Events::Instantiate<Matrix::Operations::Metric::CrossEntropy>,
+
+                        NeuralNetwork::Computation::Graph::Events::Differentiate
                     >;
             };
 
@@ -221,6 +230,11 @@ namespace NeuralNetwork {
                     State operator()(States::NoOperation nop, Events::Instantiate<RegisteryType> i) {
                         return on_event(nop, i);
                     }
+                    State operator()(States::CrossEntropy ce, Events::Differentiate& df) noexcept;
+                    State operator()(States::MatrixMultiply mm, Events::Differentiate& df) noexcept;
+                    State operator()(States::Plus add, Events::Differentiate& df) noexcept;
+                    State operator()(States::ReLU relu, Events::Differentiate& df) noexcept;
+                    State operator()(const States::NoOperation& nop, Events::Differentiate&) noexcept;
 
 
                     /*
@@ -232,10 +246,6 @@ namespace NeuralNetwork {
                     }
 
                 private:   
-                    // static State on_event(States::CrossEntropy ce, Events::Differentiate df) {
-                    //     return States::Invalidated{};
-                    // }
-
 
                     template <Matrix::Operations::BinaryMatrixOperatable RegisteryType>
                     requires Same_as<RegisteryType, Matrix::Operations::Binary::Multiplication::ParallelDNC> ||
