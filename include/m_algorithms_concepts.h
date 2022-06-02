@@ -3,6 +3,7 @@
 
 #include <concepts>
 #include <memory>
+#include <stack>
 
 #include "matrix.h"
 
@@ -87,6 +88,15 @@ namespace NeuralNetwork {
                 { registry.right_op_id()   } -> Same_as<TensorID>;
             };
 
+
+            template <typename GraphIteratorPolicy>
+            concept TraversalPolicy = requires(GraphIteratorPolicy policy, std::stack<TensorID>& tid_stack, TensorID tid) {
+
+                policy.process_head(tid);
+                policy.apply_to_children(tid_stack, tid);
+                policy.dereference(tid);
+
+            };
 
 
         }
