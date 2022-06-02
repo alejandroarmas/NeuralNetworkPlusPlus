@@ -19,8 +19,8 @@ namespace NeuralNetwork {
             void ReversePass::backwards(Tensor& _t, 
                 PrintTag _ ) {
 
-                    for (auto it = _t.begin(); it != _t.end(); it++) {
-                        std::cout << "Step" << std::endl;
+                    for (auto it = _t.begin(); it != _t.end(); ++it) {
+                        std::cout << "Reverse Pass Iteration." << std::endl;
                     }
 
 
