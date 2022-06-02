@@ -54,7 +54,14 @@ namespace Matrix {
                         const Matrix::Representation& m) const noexcept;
             };
 
-            static_assert(MatrixOperatable<ReLU>);
+            class Sign : public UnaryAdapter<Sign> {
+
+                public:
+                    Matrix::Representation operate(
+                        const Matrix::Representation& m) const noexcept;
+            };
+
+            static_assert(MatrixOperatable<Sign>);
 
 
             class SoftMax : public UnaryAdapter<SoftMax> {
