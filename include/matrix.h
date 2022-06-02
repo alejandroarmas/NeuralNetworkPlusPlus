@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdint>
 #include <stdexcept>
+#include <string>
 #include <memory>
 #include <utility>
 
@@ -66,6 +67,30 @@ namespace Matrix {
                 return *this;
             }
 
+            Representation& operator+=(const Matrix::Representation& _other) noexcept {
+                
+                assert(rows    == _other.rows); 
+                assert(columns == _other.columns);
+
+                auto r = _other.constScanStart();
+                for (auto l = scanStart(); l != scanEnd(); l++, r++) {
+                    *l += *r;
+                }
+
+                return *this;
+            }
+
+            friend Representation operator*(double val, const Matrix::Representation& _other) noexcept {
+                
+                Representation output{_other};
+
+                for (auto it = output.scanStart(); it != output.scanEnd(); it++) {
+                    *it = val * *it;
+                }
+
+                return Representation{output};
+            }
+
 
             Representation& operator=(Matrix::Representation&& _other) {
                 rows = std::exchange(_other.rows, 0);
@@ -75,6 +100,7 @@ namespace Matrix {
             }
 
             Type get_type(void) const noexcept;
+            std::string_view get_type_string(void) const noexcept;
 
             bool operator==(const Matrix::Representation _other) noexcept;
             bool operator!=(const Matrix::Representation _other) noexcept;
