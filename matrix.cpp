@@ -55,7 +55,7 @@ void Matrix::Representation::put(u_int64_t r, u_int64_t c, float val) noexcept {
 Matrix::Representation::Type Matrix::Representation::get_type(void) const noexcept {
     bool is_row_vector    = rows    == 1; 
     bool is_column_vector = columns == 1;
-    bool is_scalar = is_row_vector && is_column_vector;
+    bool is_scalar        = is_row_vector && is_column_vector;
 
     
     if (is_scalar) 
@@ -66,6 +66,23 @@ Matrix::Representation::Type Matrix::Representation::get_type(void) const noexce
         return Type::ROW_VECTOR;
     else
         return Type::MATRIX;
+}
+
+
+std::string_view Matrix::Representation::get_type_string(void) const noexcept {
+    bool is_row_vector    = rows    == 1; 
+    bool is_column_vector = columns == 1;
+    bool is_scalar        = is_row_vector && is_column_vector;
+
+    
+    if (is_scalar) 
+        return "SCALAR";
+    else if (is_column_vector) 
+        return "COLUMN_VECTOR";
+    else if (is_row_vector) 
+        return "ROW_VECTOR";
+    else
+        return "MATRIX";
 }
 
 
