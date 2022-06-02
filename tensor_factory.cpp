@@ -20,9 +20,6 @@ namespace NeuralNetwork {
                 
                 auto tensor = std::make_shared<Tensor>(
                         _l, _w, _t, _f, _r);
-
-                // OperationFactory::create(
-                //     Matrix::Operations::Code::NOP, tensor);
                 
                 FunctionObjectFactory::create(tensor);
                 
@@ -40,17 +37,10 @@ namespace NeuralNetwork {
                 IsLeaf _f,
                 IsRecordable _r) {
                 
-                
-                // Matrix::Operations::Utility::Codify codify;
-                // Matrix::Operations::Code _code = codify(_operator); 
-
 
                 auto tensor = std::make_shared<Tensor>(
                         _m, _t, _f, _r);
 
-                // OperationFactory::create(
-                //     _code, tensor, _op, _op2);
-                
                 if constexpr (Matrix::Operations::UnaryMatrixOperatable<Operator>) {
                     FunctionObjectFactory::create(
                         _operator, tensor, _op);
@@ -60,8 +50,6 @@ namespace NeuralNetwork {
                         _operator, tensor, _op, _op2);
                 }
  
-
-                
                 return tensor;
             }
 
