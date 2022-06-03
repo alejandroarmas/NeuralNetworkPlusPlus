@@ -1,8 +1,52 @@
-# NeuralNetworkPlusPlus
-Implementation of a Multilayer Perceptron from Scratch. 
+# Wirikuta
 
+### What is Wirikuta?
 
-# Requirements
+Wirikuta is a high-performance Automatic Differentiation Engine used to build Deep neural networks. 
+
+According to Huichol symbology, Wirikuta is the land where life began and the religous site embarked for pilgrimage, where the Huichol peoples gather Peyote. Peyote is a psychoactive cactus providing acquisition of shamanic powers, which provide insights to the metaphysical world. In that same vein, information processing through deep learning models and data, elucidate the physical one we reside. I hope you find this code useful.   
+
+```c++
+    constexpr double LEARNING_RATE = 0.001; 
+    constexpr double TRAINING_EPOCS = 300; 
+
+    auto ma = NeuralNetwork::Computation::Graph::TensorConstructor::create(
+            Matrix::Rows(1), 
+            Matrix::Columns(2000));
+    
+    auto ground_truth = NeuralNetwork::Computation::Graph::TensorConstructor::create(
+            Matrix::Rows(1), 
+            Matrix::Columns(10));
+    
+
+    NeuralNetwork::Sequential model;
+
+    model.add(std::make_unique<NeuralNetwork::Layer>(
+            std::make_unique<NeuralNetwork::MatrixMultiplyStep>(Matrix::Rows(2000), Matrix::Columns(1000)),
+            std::make_unique<NeuralNetwork::AddStep>(Matrix::Columns(1000))    
+    ));
+    model.add(std::make_unique<NeuralNetwork::ActivationFunctions::ReLU>());
+    model.add(std::make_unique<NeuralNetwork::Layer>(
+            std::make_unique<NeuralNetwork::MatrixMultiplyStep>(Matrix::Rows(1000), Matrix::Columns(10)),
+            std::make_unique<NeuralNetwork::AddStep>(Matrix::Columns(10))    
+    ));
+    
+    auto CE = NeuralNetwork::Computation::Graph::TensorOp(Matrix::Operations::Metric::CrossEntropy{});
+
+    for (int i = 0; i < TRAINING_EPOCS; i++) {
+        auto out  = model.forward(ma);
+        auto loss = CE(ground_truth, out);        
+        loss->backwards();
+
+        for (auto it = loss->parameters().begin(); it != loss->parameters().end(); ++it) {
+            *it += -LEARNING_RATE * it.gradient();
+        }
+
+    }
+
+```
+
+### Getting Started
 
 This project utilizes efficient parallel code via **OpenCilk** for shared-multicore machines. This means you need an extention to the LLVM compiler via Tapir. This means having llvm intermediate representations of logically parallel tasks for effective compiler optimizations [1]. The Cilk scheduler then decides at runtime how to schedule and execute logically parallel tasks onto parallel processors in a provably efficient schedule.
 
